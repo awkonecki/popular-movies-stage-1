@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMovieAdapter = new MovieAdapter();
+        mMovieAdapter = new MovieAdapter(new MovieListener());
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
 
@@ -24,5 +24,12 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mMovieAdapter);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
+    }
+
+    private class MovieListener implements MovieAdapter.MovieAdatperOnClickListener {
+        @Override
+        public void OnClick(int position) {
+
+        }
     }
 }

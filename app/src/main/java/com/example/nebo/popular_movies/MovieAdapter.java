@@ -10,7 +10,14 @@ import android.widget.TextView;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
-    public interface MovieAdatperOnClick {
+    // Cache the instance of the onClickListener desired by the application.
+    private MovieAdatperOnClickListener mMovieAdatperOnClickListener = null;
+
+    public MovieAdapter(MovieAdatperOnClickListener listener) {
+        this.mMovieAdatperOnClickListener = listener;
+    }
+
+    public interface MovieAdatperOnClickListener {
         public void OnClick(int position);
     }
 
@@ -54,7 +61,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         @Override
         public void onClick(View v) {
-
+            Log.d("OnClick",
+                    "Adapter Position " + Integer.toString(getAdapterPosition()) +
+                            " Layout Position " + Integer.toString(getLayoutPosition()));
+            MovieAdapter.this.onClick(0);
         }
+    }
+
+    public void onClick(int position) {
+        this.mMovieAdatperOnClickListener.OnClick(position);
     }
 }
