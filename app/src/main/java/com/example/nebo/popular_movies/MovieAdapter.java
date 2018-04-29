@@ -2,30 +2,54 @@ package com.example.nebo.popular_movies;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
+
+    public interface MovieAdatperOnClick {
+        public void OnClick(int position);
+    }
+
     @Override
     public int getItemCount() {
-        return 0;
+        // Required for inheritance from RecyclerView.Adapter due to abstract definition.
+        return 50;
     }
 
     @NonNull
     @Override
     public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        // Required for inheritance from RecyclerView.Adapter due to abstract definition.
+
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.grid_item, parent, false);
+        MovieViewHolder movieViewHolder = new MovieViewHolder(view);
+
+        return movieViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-
+        // Required for inheritance from RecyclerView.Adapter due to abstract definition.
+        Log.d("Onbind called", "On bind called " + Integer.toString(position));
+        holder.bind("Data " + Integer.toString(position));
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView view = null;
+
         public MovieViewHolder(View itemView) {
             super(itemView);
+            this.view = (TextView) itemView.findViewById(R.id.tv_item_text);
             itemView.setOnClickListener(this);
+        }
+
+        public void bind(String viewData) {
+            this.view.setText(viewData);
         }
 
         @Override
