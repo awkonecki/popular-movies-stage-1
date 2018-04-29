@@ -8,13 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
+
+    private static int mViewHolderCount = 0;
 
     // Cache the instance of the onClickListener desired by the application.
     private MovieAdatperOnClickListener mMovieAdatperOnClickListener = null;
 
     public MovieAdapter(MovieAdatperOnClickListener listener) {
         this.mMovieAdatperOnClickListener = listener;
+        this.mViewHolderCount = 0;
     }
 
     public interface MovieAdatperOnClickListener {
@@ -24,7 +29,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public int getItemCount() {
         // Required for inheritance from RecyclerView.Adapter due to abstract definition.
-        return 50;
+        return 1000;
     }
 
     @NonNull
@@ -36,6 +41,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         View view = inflater.inflate(R.layout.grid_item, parent, false);
         MovieViewHolder movieViewHolder = new MovieViewHolder(view);
 
+        Log.d("onCreateViewHolder", Integer.toString(this.mViewHolderCount++));
+
+        movieViewHolder.numberView.setText("View " + Integer.toString(this.mViewHolderCount));
+
         return movieViewHolder;
     }
 
@@ -44,14 +53,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         // Required for inheritance from RecyclerView.Adapter due to abstract definition.
         Log.d("Onbind called", "On bind called " + Integer.toString(position));
         holder.bind("Data " + Integer.toString(position));
+
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView view = null;
+        private TextView numberView = null;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
             this.view = (TextView) itemView.findViewById(R.id.tv_item_text);
+            this.numberView = (TextView) itemView.findViewById(R.id.tv_view_index);
             itemView.setOnClickListener(this);
         }
 
@@ -61,9 +73,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         @Override
         public void onClick(View v) {
+
             Log.d("OnClick",
                     "Adapter Position " + Integer.toString(getAdapterPosition()) +
-                            " Layout Position " + Integer.toString(getLayoutPosition()));
+                            " Layout Position " + Integer.toString(getLayoutPosition()) +
+                            " Item Id " + Long.toString(getItemId()));
             MovieAdapter.this.onClick(0);
         }
     }
