@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mi_refresh"
+        android:title="@string/mi_refresh_title"
+        android:icon="@android:drawable/ic_menu_rotate"
+        android:contentDescription="@string/mi_refresh_content_description"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/mi_sort"
+        android:title="@string/mi_sort_title"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:contentDescription="@string/mi_sort_content_description"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/mi_settings"
+        android:title="@string/mi_settings_title"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:contentDescription="@string/mi_settings_content_description"
+        app:showAsAction="ifRoom"/>
+
+</menu>

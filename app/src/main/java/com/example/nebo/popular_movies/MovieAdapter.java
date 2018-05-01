@@ -27,7 +27,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public int getItemCount() {
         // Required for inheritance from RecyclerView.Adapter due to abstract definition.
-        return 1000;
+        return 10;
     }
 
     @NonNull
