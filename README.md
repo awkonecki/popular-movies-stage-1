@@ -33,6 +33,10 @@ Since this is a two part project will look at both rubics to determine the core 
 - Due to these being background tasks / threads need to handle the case of data deliverly within the application life-cycle manager.
 - will also need to support the `find` query for going beyond the popular definition only.
 
+#### Approach
+- make sure can support each type of API query
+- determine how to handle error events with the network stack
+
 ### Data Persistance
 - minimum requirement of saving the user's favorite `title` & `id` for each movie
 - this requires use of SQLite DB and content provider to such information
@@ -40,17 +44,34 @@ Since this is a two part project will look at both rubics to determine the core 
 - user action of un-favorite something should lead to removal of the data from the database.
 - on application start it might be nice to make sure that the data is correct from the source.
 
+#### Approach
+- use content providers
+- use sql databse and associated model driven interaction
+- the network data returned is a JSON, so will need a JSON parser to break the data down
+
 ### Tasks
 - background tasks are needed
 - scheduling is not directly needed but might be a good idea to only query the data integrity funciton once a day (don't want to have it query when the application receives the onCreate call everytime).
 - all asynchronous tasks (i.e. network and database queries should occur in background taks / threads).
 
+#### Approach
+- Use Async tasks that are managed by firebase job scheduling.
+- Use Loaders to handle the lanuching of tasks with specific jobs.
+
 ### Lifecycle
 - change in orientation, device status etc. should not change the previously selected, filled etc information.
 - background tasks / threads should deliver their results to the appropriate instance and not cause performance degregation due to zombie activities.
+
+#### Approach
+- Need to overload the life-cycle methods
 
 ### UI
 - RecyclerViewer grid layout is required, thus requiring an adapter and layout manager to handle this assocaited with the application.
 - it would be nice that an on-click event of a poster does not switch to a new layout but blurs the background and does a new activity visibility on top (nice to have).
 - overlay of a UI element to allow a user to not have to see the details to favorite / un-favorite a moive.
 - selection of the non-favorite area leads to displaying the movie details
+
+#### Approach
+- use of recyclerviewer
+- will need to research graphical overlays with multiple functionality
+- will need to determine how to handle this for onClick events
