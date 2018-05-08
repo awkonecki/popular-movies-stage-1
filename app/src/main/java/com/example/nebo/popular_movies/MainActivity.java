@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.nebo.popular_movies.data.MovieDataModel;
 import com.example.nebo.popular_movies.util.MovieURLUtils;
 import com.example.nebo.popular_movies.util.NetworkUtils;
 
