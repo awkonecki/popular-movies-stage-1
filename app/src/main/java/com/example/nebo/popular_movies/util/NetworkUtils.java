@@ -1,45 +1,46 @@
 package com.example.nebo.popular_movies.util;
 
-import android.net.Uri;
-import android.util.Log;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
 public class NetworkUtils {
-    private static final String THE_MOVIE_DB_BASE_URL = "http://api.themoviedb.org/3/movie/550";
-    private static final String KEY_PARAM = "api_key";
+    /***
+     * @brief Obtain the response from a url connection.
+     * @param url URL object that contains the well-formed URL of which to connect to.
+     * @return String object of which is the response from the server.
+     * @throws IOException thrown if a network error occurs.
+     * @throws IllegalArgumentException thrown if a null is detected in the arguments.
+     */
+    public static String getUrlHttpResponse(@NonNull URL url) throws
+            IOException,
+            IllegalArgumentException {
 
-    public static URL buildUrl(String query) {
+        // Reference material on network usage in Java at
+        // https://stackoverflow.com/questions/2793150/how-to-use-java-net-urlconnection-to-fire-and-handle-http-requests
 
-        Uri uri = Uri.parse(NetworkUtils.THE_MOVIE_DB_BASE_URL).buildUpon().appendQueryParameter(NetworkUtils.KEY_PARAM, query).build();
-        URL url = null;
-        try {
-            url = new URL(uri.toString());
+        // Still providing guard against null if compilation options are not used to enforce.
+        if (url == null) {
+            throw new java.lang.IllegalArgumentException("Invalid Null Argument.");
         }
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
 
-        Log.d("URL", url.toString());
-        return url;
-    }
-
-    public static String getResponseFromHttpsUrl(URL url) throws IOException {
-
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        // urlConnection.setRequestProperty("Accept", "application/json");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         try {
-            InputStream in = urlConnection.getInputStream();
+            // Represents an input stream of bytes.
+            InputStream in = connection.getInputStream();
 
+            // Text scanner
             Scanner scanner = new Scanner(in);
+
+            // Break the GET response into parts based on the delimiter.
             scanner.useDelimiter("\\A");
 
+            // Obtain the response body if it exists.
             boolean hasInput = scanner.hasNext();
             String response = null;
             if (hasInput) {
@@ -48,9 +49,7 @@ public class NetworkUtils {
             scanner.close();
             return response;
         } finally {
-            urlConnection.disconnect();
+            connection.disconnect();
         }
-
-        // return null;
     }
 }

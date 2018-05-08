@@ -122,6 +122,10 @@ public class MainActivity extends AppCompatActivity implements
 
     //**********************************************************************************************
     // START LOADER METHODS FOR ASYNC TASKS
+    //
+    // Loader is to be used if tied to the activity lifecycle
+    // allow for user interface changes and commuinicate with Activity
+    // For this Loader is used due to population of a recycler view adapter
     //**********************************************************************************************
     @NonNull
     @Override
@@ -138,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements
                         Log.d("LoadInBackground", "in background task");
                         URL url = NetworkUtils.buildUrl("xxx");
                         try {
-                            String string = NetworkUtils.getResponseFromHttpsUrl(url);
+                            String string = NetworkUtils.getUrlHttpResponse(url);
                             Log.d("Network Result", string);
                         }
                         catch (java.io.IOException e) {
