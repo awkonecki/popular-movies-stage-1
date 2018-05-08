@@ -1,8 +1,9 @@
-package com.example.nebo.popular_movies.data;
+package com.example.nebo.popular_movies.util;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -10,15 +11,23 @@ import java.net.URL;
  * @TODO Will want to figure out if at time of building the URL or URI if the parameters need to be
  * encrypted.  This is beyond the scope of this project however.
  */
-public class MovieDataModel {
+public class MovieURLUtils {
     private static final int DEFAULT_PAGE_NUM = 1;
     private static final int MIN_PAGE_NUM = 1;
     private static final int MAX_PAGE_NUM = 1000;
+
+    // QUERY PATHS
     private static final String THE_MOVIE_DB_BASE_URL = "http://api.themoviedb.org/3";
-    private static final String KEY_PARAM = "api_key";
-    private static final String PAGE_PARAM = "page";
     private static final String POPULAR_MOVIE_ENDPOINT = "movie/popular";
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
+    private static final String IMAGE_BASE_URL = "http://image.tmbd.org/t/p";
+    private static final String SIZE_W185 = "w185";
+
+    // QUERY PARAMETERS
+    private static final String KEY_PARAM = "api_key";
+    private static final String PAGE_PARAM = "page";
+
+    // QUERY VALUES
     private static final String API_KEY =
             // !!! Place key below.
             "XXX";
@@ -28,7 +37,7 @@ public class MovieDataModel {
      * @return URL with the popular movie as the endpoint.
      */
     public static URL buildPopularURL() {
-        return MovieDataModel.buildUrl(MovieDataModel.POPULAR_MOVIE_ENDPOINT, 1);
+        return MovieURLUtils.buildUrl(MovieURLUtils.POPULAR_MOVIE_ENDPOINT, 1);
     }
 
     /**
@@ -38,12 +47,12 @@ public class MovieDataModel {
      * @return URL with the popular movie as the endpoint.
      */
     public static URL buildPopularURL(int page) {
-        if (page > MovieDataModel.MAX_PAGE_NUM || page < MovieDataModel.MIN_PAGE_NUM) {
+        if (page > MovieURLUtils.MAX_PAGE_NUM || page < MovieURLUtils.MIN_PAGE_NUM) {
             Log.d("Popular URL", "Page value out of range " + page + " using default.");
-            page = MovieDataModel.DEFAULT_PAGE_NUM;
+            page = MovieURLUtils.DEFAULT_PAGE_NUM;
         }
 
-        return MovieDataModel.buildUrl(MovieDataModel.POPULAR_MOVIE_ENDPOINT, page);
+        return MovieURLUtils.buildUrl(MovieURLUtils.POPULAR_MOVIE_ENDPOINT, page);
     }
 
     /**
@@ -51,7 +60,7 @@ public class MovieDataModel {
      * @return URL with the top rated moive as the endpoint.
      */
     public static URL buildTopRatedURL() {
-        return MovieDataModel.buildUrl(MovieDataModel.TOP_RATED_ENDPOINT, 1);
+        return MovieURLUtils.buildUrl(MovieURLUtils.TOP_RATED_ENDPOINT, 1);
     }
 
     /**
@@ -61,21 +70,50 @@ public class MovieDataModel {
      * @return URL with the top rated movie as the endpoint.
      */
     public static URL buildTopRatedURL(int page) {
-        if (page > MovieDataModel.MAX_PAGE_NUM || page < MovieDataModel.MIN_PAGE_NUM) {
+        if (page > MovieURLUtils.MAX_PAGE_NUM || page < MovieURLUtils.MIN_PAGE_NUM) {
             Log.d("Top Rated URL", "Page value out of range " + page + " using default.");
-            page = MovieDataModel.DEFAULT_PAGE_NUM;
+            page = MovieURLUtils.DEFAULT_PAGE_NUM;
         }
 
-        return MovieDataModel.buildUrl(MovieDataModel.TOP_RATED_ENDPOINT, page);
+        return MovieURLUtils.buildUrl(MovieURLUtils.TOP_RATED_ENDPOINT, page);
+    }
+
+    /**
+     * @brief Construct the URL that is responsible for the path to the movie poster image.
+     * @param path String that indicates the unique endpoint path for the image.
+     * @return URL upon success, otherwise null.
+     */
+    private static URL buildImageUrl(@NonNull final String path) {
+        Uri uri;
+        URL url = null;
+
+        if (path == null) {
+            return url;
+        }
+
+        uri = Uri.parse(MovieURLUtils.IMAGE_BASE_URL).buildUpon().
+                appendEncodedPath(MovieURLUtils.SIZE_W185).
+                appendEncodedPath(path).build();
+
+        try {
+            url = new URL(uri.toString());
+        }
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+            url = null;
+        }
+
+        return url;
     }
 
     /**
      * @brief Build the URL that hosts the 'themoviedb' endpoint API.
      * @param path String that contains a detailed path that is to be appended to the base bath.
+     * @param page integer that indicates the page of results desired to be listed in the response.
      * @return Non-null URL upon success, otherwise null.
      */
     private static URL buildUrl(@NonNull final String path, int page) {
-        Uri uri = null;
+        Uri uri;
         URL url = null;
 
         // Defensive check if options are not enforcing non-null checks.
@@ -84,10 +122,10 @@ public class MovieDataModel {
         }
 
         // Build the URI resource.
-        uri = Uri.parse(MovieDataModel.THE_MOVIE_DB_BASE_URL).buildUpon().
+        uri = Uri.parse(MovieURLUtils.THE_MOVIE_DB_BASE_URL).buildUpon().
                 appendEncodedPath(path).
-                appendQueryParameter(MovieDataModel.KEY_PARAM,  MovieDataModel.API_KEY).
-                appendQueryParameter(MovieDataModel.PAGE_PARAM, Integer.toString(page)).build();
+                appendQueryParameter(MovieURLUtils.KEY_PARAM,  MovieURLUtils.API_KEY).
+                appendQueryParameter(MovieURLUtils.PAGE_PARAM, Integer.toString(page)).build();
 
         try {
             // Attempt to construct a valid URL.
