@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements
                         Log.d("LoadInBackground", "in background task");
                         URL url = NetworkUtils.buildUrl("xxx");
                         try {
-                            String string = NetworkUtils.getResponseFromHttpsUrl(url);
+                            String string = NetworkUtils.getUrlHttpResponse(url);
                             Log.d("Network Result", string);
                         }
                         catch (java.io.IOException e) {
