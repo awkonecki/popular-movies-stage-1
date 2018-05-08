@@ -23,6 +23,8 @@ public class MovieURLUtils {
     private static final String IMAGE_BASE_URL = "http://image.tmbd.org/t/p";
     private static final String SIZE_W185 = "w185";
 
+    // @TODO determine if image size is needed for backdrop later.
+
     // QUERY PARAMETERS
     private static final String KEY_PARAM = "api_key";
     private static final String PAGE_PARAM = "page";
