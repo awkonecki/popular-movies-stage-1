@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.nebo.popular_movies.data.MovieDataModel;
 import com.example.nebo.popular_movies.util.NetworkUtils;
 
 import java.net.URL;
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public String loadInBackground() {
                         Log.d("LoadInBackground", "in background task");
-                        URL url = NetworkUtils.buildUrl("xxx");
+                        URL url = MovieDataModel.buildPopularURL(); // NetworkUtils.buildUrl("xxx");
                         try {
                             String string = NetworkUtils.getUrlHttpResponse(url);
                             Log.d("Network Result", string);
