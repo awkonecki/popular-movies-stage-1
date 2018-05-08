@@ -8,6 +8,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+/**
+ * @TODO It is important to realize that data is not encrypted, thus any API keys or user provided
+ * information is exposed while in transit.  If HTTPS is used then the certificate needs to be
+ * verified prior to use.
+ */
 public class NetworkUtils {
     /***
      * @brief Obtain the response from a url connection.
@@ -28,6 +33,8 @@ public class NetworkUtils {
             throw new java.lang.IllegalArgumentException("Invalid Null Argument.");
         }
 
+        // Should really use HTTPS for connections to aid in protecting sensitive keys, but is
+        // beyond the scope of this stage of development currently.
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         try {
