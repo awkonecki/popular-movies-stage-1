@@ -13,6 +13,7 @@ import com.example.nebo.popular_movies.data.Movie;
 import com.example.nebo.popular_movies.util.MovieURLUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
@@ -21,22 +22,34 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     // Cache the instance of the onClickListener desired by the application.
     private MovieAdatperOnClickListener mMovieAdatperOnClickListener = null;
+    private MovieFetchData mMovieAdapterFetchData = null;
 
-    // Adapter copy of the Movies
-    private List<Movie> mMovies = null;
+    // Adapter will own its own copy of the set of movies
+    private List<Movie> mMovies = new ArrayList<Movie>();
 
-    public MovieAdapter(MovieAdatperOnClickListener listener, List<Movie> movies) {
+    public MovieAdapter(MovieAdatperOnClickListener listener, MovieFetchData dataFetcher, List<Movie> movies) {
         this.mMovieAdatperOnClickListener = listener;
-        this.mMovies = movies;
+        this.mMovieAdapterFetchData = dataFetcher;
         this.mViewHolderCount = 0;
+
+        if (movies != null) {
+            for (Movie movie : movies) {
+                this.mMovies.add(movie);
+            }
+        }
     }
 
     public interface MovieAdatperOnClickListener {
         public void OnClick(int position);
     }
 
+    public interface MovieFetchData {
+        public void fetchData();
+    }
+
     @Override
     public int getItemCount() {
+        Log.d("getItemCount", "getItemCount was called.");
         // Required for inheritance from RecyclerView.Adapter due to abstract definition.
         if (this.mMovies == null) {
             return 0;
@@ -71,7 +84,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             holder.bind(this.mMovies.get(position).getPosterPath());
         }
         else {
+            Log.d("onBindViewHolder", "Exceeding the viewholder position.");
             holder.bind("junk");
+        }
+
+        // Determine if need to load another page.
+        if (position > ((this.mMovies.size() * 9) / 10)) {
+            Log.d("onBindViewHolder", "Near the end of the views, should fetch more data.");
+            this.fetchData();
         }
     }
 
@@ -105,6 +125,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     public void onClick(int position) {
-        this.mMovieAdatperOnClickListener.OnClick(position);
+        if (this.mMovieAdatperOnClickListener != null) {
+            this.mMovieAdatperOnClickListener.OnClick(position);
+        }
+    }
+
+    public void fetchData() {
+        if (this.mMovieAdapterFetchData != null) {
+            this.mMovieAdapterFetchData.fetchData();
+        }
     }
 }

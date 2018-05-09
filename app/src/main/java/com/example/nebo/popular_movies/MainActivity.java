@@ -28,9 +28,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<String>,
-        MovieAdapter.MovieAdatperOnClickListener {
+        MovieAdapter.MovieAdatperOnClickListener,
+        MovieAdapter.MovieFetchData {
 
     private static final int REFRESH_LOADER_ID = 13;
+    private static final int FETCH_NEW_PAGE = 14;
 
     private MovieAdapter mMovieAdapter = null;
     private RecyclerView mRecyclerView = null;
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements
         // Save the instance of the progress bar.
         mProgressBar = findViewById(R.id.pb_main_progress_bar);
 
-        mMovieAdapter = new MovieAdapter(this, null);
+        mMovieAdapter = new MovieAdapter(this, this,null);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
 
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(mMovieAdapter);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
+
+        // mRecyclerView.setVerticalScrollbarPosition(0);
 
         // Loader Manager for async tasks
         LoaderManager loaderManager = getSupportLoaderManager();
@@ -103,6 +107,11 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void OnClick(int position) {
+
+    }
+
+    @Override
+    public void fetchData() {
 
     }
 
@@ -199,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         else {
             List<Movie> movies = JsonUtils.parseJsonResponse(response);
-            this.mMovieAdapter = new MovieAdapter(this, movies);
+            this.mMovieAdapter = new MovieAdapter(this, this, movies);
             this.mRecyclerView.setAdapter(this.mMovieAdapter);
             this.noLoading();
         }
