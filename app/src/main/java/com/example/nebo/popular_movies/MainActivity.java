@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements
         // Save the instance of the progress bar.
         mProgressBar = findViewById(R.id.pb_main_progress_bar);
 
-        mMovieAdapter = new MovieAdapter(this);
+        mMovieAdapter = new MovieAdapter(this, null);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
 
@@ -143,24 +143,26 @@ public class MainActivity extends AppCompatActivity implements
                     @Nullable
                     @Override
                     public String loadInBackground() {
+                        String response = null;
                         Log.d("LoadInBackground", "in background task");
                         URL url = MovieURLUtils.buildPopularURL(); // NetworkUtils.buildUrl("xxx");
                         try {
-                            String string = NetworkUtils.getUrlHttpResponse(url);
+                            response = NetworkUtils.getUrlHttpResponse(url);
 
-                            List<Movie> movies = JsonUtils.parseJsonResponse(string);
+                            /*
+                            List<Movie> movies = JsonUtils.parseJsonResponse(response);
 
                             for (Movie movie : movies) {
                                 Log.d("Movie", movie.toString());
                             }
-
-                            Log.d("Network Result", string);
+                            */
+                            Log.d("Network Result", response);
                         }
                         catch (java.io.IOException e) {
                             e.printStackTrace();
                         }
                         // work from async tasks for getting data i.e. url, getResponse function.
-                        return null;
+                        return response;
                     }
 
                     @Override
@@ -173,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     @Override
                     protected void onStopLoading() {
-                        super.onStopLoading();
+                        // super.onStopLoading();
                         Log.d("Stoped loading", "not loading.");
                     }
 
@@ -189,9 +191,19 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader<String> loader, String data) {
+    public void onLoadFinished(@NonNull Loader<String> loader, String response) {
         // loader is complete but might be some errors w.r.t the data
         // should likely need to set visibility of the views here.
+        if (response == null || response.isEmpty()) {
+
+        }
+        else {
+            List<Movie> movies = JsonUtils.parseJsonResponse(response);
+            this.mMovieAdapter = new MovieAdapter(this, movies);
+            this.mRecyclerView.setAdapter(this.mMovieAdapter);
+            this.noLoading();
+        }
+
         Log.d("onLoadFinished", "Completed the task");
     }
 

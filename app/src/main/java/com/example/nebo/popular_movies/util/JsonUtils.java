@@ -6,7 +6,7 @@ import android.util.Log;
 import com.example.nebo.popular_movies.data.Movie;
 
 import java.util.List;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,7 +28,7 @@ public class JsonUtils {
      * @return List of movies.
      */
     public static List<Movie> parseJsonResponse(@NonNull String response) {
-        List<Movie> movies = new LinkedList<Movie>();
+        List<Movie> movies = new ArrayList<Movie>();
         JSONObject jsonResponse = null;
         JSONArray jsonArrayOfMovies = null;
 
@@ -78,7 +78,7 @@ public class JsonUtils {
             title = movieJsonObject.getString(JsonUtils.MOVIE_TITLE_KEY);
             overview = movieJsonObject.getString(JsonUtils.MOVIE_OVERVIEW_KEY);
             backdropPath = movieJsonObject.getString(JsonUtils.MOVIE_BACKDROP_PATH_KEY);
-            posterPath = movieJsonObject.getString(JsonUtils.MOVIE_POSTER_PATH_KEY);
+            posterPath = MovieURLUtils.buildImageUrl(movieJsonObject.getString(JsonUtils.MOVIE_POSTER_PATH_KEY)).toString();
             date = movieJsonObject.getString(JsonUtils.MOVIE_DATE_KEY);
             popularity = movieJsonObject.getDouble(JsonUtils.MOVIE_POPULARITY_KEY);
             vote = movieJsonObject.getDouble(JsonUtils.MOVIE_VOTE_KEY);
