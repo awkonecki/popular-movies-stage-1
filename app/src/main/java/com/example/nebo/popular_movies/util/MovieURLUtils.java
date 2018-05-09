@@ -20,7 +20,7 @@ public class MovieURLUtils {
     private static final String THE_MOVIE_DB_BASE_URL = "http://api.themoviedb.org/3";
     private static final String POPULAR_MOVIE_ENDPOINT = "movie/popular";
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
-    private static final String IMAGE_BASE_URL = "http://image.tmbd.org/t/p";
+    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
     private static final String SIZE_W185 = "w185";
 
     // @TODO determine if image size is needed for backdrop later.
@@ -85,7 +85,7 @@ public class MovieURLUtils {
      * @param path String that indicates the unique endpoint path for the image.
      * @return URL upon success, otherwise null.
      */
-    private static URL buildImageUrl(@NonNull final String path) {
+    public static URL buildImageUrl(@NonNull final String path) {
         Uri uri;
         URL url = null;
 
