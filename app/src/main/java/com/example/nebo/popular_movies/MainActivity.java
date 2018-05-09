@@ -18,10 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.nebo.popular_movies.data.Movie;
+import com.example.nebo.popular_movies.util.JsonUtils;
 import com.example.nebo.popular_movies.util.MovieURLUtils;
 import com.example.nebo.popular_movies.util.NetworkUtils;
 
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<String>,
@@ -144,6 +147,13 @@ public class MainActivity extends AppCompatActivity implements
                         URL url = MovieURLUtils.buildPopularURL(); // NetworkUtils.buildUrl("xxx");
                         try {
                             String string = NetworkUtils.getUrlHttpResponse(url);
+
+                            List<Movie> movies = JsonUtils.parseJsonResponse(string);
+
+                            for (Movie movie : movies) {
+                                Log.d("Movie", movie.toString());
+                            }
+
                             Log.d("Network Result", string);
                         }
                         catch (java.io.IOException e) {

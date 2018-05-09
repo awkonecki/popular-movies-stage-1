@@ -58,6 +58,17 @@ public class Movie {
     }
 
     //**********************************************************************************************
+    // OVERRIDDEN METHODS
+    //**********************************************************************************************
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(this.mTitle).append(" ").append(this.mID).append(" ").append(this.mPosterPath);
+
+        return sb.toString();
+    }
+
+    //**********************************************************************************************
     // CLASS ACCESSORS
     //**********************************************************************************************
     public void setTitle(String title) {
