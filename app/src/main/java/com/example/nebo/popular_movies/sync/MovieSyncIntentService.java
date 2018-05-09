@@ -15,4 +15,6 @@ public class MovieSyncIntentService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         MovieSyncTask.syncMovies(this);
     }
+
+
 }
