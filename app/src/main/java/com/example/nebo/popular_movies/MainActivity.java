@@ -52,11 +52,12 @@ public class MainActivity extends AppCompatActivity implements
         /**
          * @brief If no more vertical scrolling down can occur then will attempt to fetch more data.
          * @param recyclerView The recycler view that is responsible for displaying the movies.
-         * @param newState Indicates the current state of the RecyclerViewer.
+         * @param dx current horizontal position
+         * @param dy current vertical position
          */
         @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
 
             // This method is a member of the layout manager.
             if (!recyclerView.canScrollVertically(1)) {
