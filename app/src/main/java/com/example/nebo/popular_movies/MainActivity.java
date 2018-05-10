@@ -111,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements
             LoaderManager loaderManager = getSupportLoaderManager();
             Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.FETCH_DATA_ID);
 
+            // Set the visibility due to fetch action being started.
+            this.onFetch();
+
             if (movieLoader == null) {
                 loaderManager.initLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
             } else {
