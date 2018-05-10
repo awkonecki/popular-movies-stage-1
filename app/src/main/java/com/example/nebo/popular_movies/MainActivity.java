@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,39 +15,40 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.nebo.popular_movies.async.MovieAsyncTaskLoader;
+import com.example.nebo.popular_movies.async.MovieManagedData;
 import com.example.nebo.popular_movies.data.Movie;
 import com.example.nebo.popular_movies.util.JsonUtils;
-import com.example.nebo.popular_movies.util.MovieURLUtils;
-import com.example.nebo.popular_movies.util.NetworkUtils;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<String>,
         MovieAdapter.MovieAdatperOnClickListener {
 
     private static boolean mLoading = false;
-
-    private static final int REFRESH_LOADER_ID = 13;
     private static final int FETCH_DATA_ID = 14;
-    private static int mPageNumber = 1;
+    private static final int POPULAR_MODE = 0;
+    private static final int TOP_RATED_MODE = 1;
+    private static final int FAVORITE_MODE = 2;
+    private static final int SEARCH_MODE = 3;
+    private static final int DEFAULT_MODE = MainActivity.POPULAR_MODE;
 
     private MovieAdapter mMovieAdapter = null;
     private RecyclerView mRecyclerView = null;
     private ProgressBar mProgressBar = null;
 
-    private List<Movie> mMovies = new ArrayList<Movie>();
+    private static MovieManagedData mPopularMovies = new MovieManagedData();
+    private static MovieManagedData mTopRatedMovies = new MovieManagedData();
+    private static int mMode = MainActivity.DEFAULT_MODE;
+
+    private MovieManagedData mActiveData = null;
 
     /**
      * @brief Scroll listener class that when no more vertical in the downward direction can occur
      * will perform a the fetching of a new page of movies.
      * @note Although the listener itself is okay, I believe that this is not really a clean way to
      * implement this functionality.
+     * @note Is still a bit jumpy when doing quick scrolling (jumps to the top or bottom directly).
      * @reference https://stackoverflow.com/questions/36127734/detect-when-recyclerview-reaches-the-bottom-most-position-while-scrolling
      */
     private class MovieScrollListener extends RecyclerView.OnScrollListener {
@@ -63,23 +63,77 @@ public class MainActivity extends AppCompatActivity implements
             super.onScrolled(recyclerView, dx, dy);
 
             GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+            MovieAdapter adapter = (MovieAdapter) recyclerView.getAdapter();
 
-            // int visibleItems = layoutManager.getChildCount();
             int totalItems = layoutManager.getItemCount();
-            // int firstPosition = layoutManager.findFirstVisibleItemPosition();
             int lastPosition = layoutManager.findLastVisibleItemPosition();
+
+            // Really only needed when changing view state or life-cycle so might not need to do it
+            // here.
+            int firstPosition = layoutManager.findFirstVisibleItemPosition();
+            adapter.getMovieData().setFirstVisible(firstPosition);
 
             if (lastPosition > (totalItems * 9 / 10)) {
                 MainActivity.this.fetchData();
             }
+        }
+    }
 
-            // This method is a member of the layout manager.
-            if (!recyclerView.canScrollVertically(1)) {
-                //MainActivity.this.fetchData();
-                Toast.makeText(MainActivity.this, "scrolled", 1).show();
+    /**
+     * @brief Set the UI element visibility during the fetch.
+     */
+    private void onFetch() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * @brief Set the UI element visibility after a fetch operation.
+     */
+    private void fetchComplete() {
+        mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * @brief Fetch the data from the appropriate source based on the current active data set.
+     * @TODO Account for each type of data-set.  Currently only processing for popular.
+     */
+    public void fetchData() {
+        Bundle args;
+
+        if (!MainActivity.mLoading) {
+            args = new Bundle();
+            args.putInt(getString(R.string.bk_page_number), this.mActiveData.getPage());
+            args.putString(getString(R.string.bk_request_type),
+                    getString(R.string.bv_request_type_popular));
+
+            MainActivity.mLoading = true;
+            // Loader Manager for async tasks
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.FETCH_DATA_ID);
+
+            if (movieLoader == null) {
+                loaderManager.initLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
+            } else {
+                loaderManager.restartLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
             }
+        }
+    }
 
-            // Log.d("Focusable value", Integer.toString(recyclerView.));
+    /**
+     * @brief set the class's instance of mActiveData member to the desired data set to operate on.
+     */
+    private void setCurrentMovieData() {
+        // For the time being not going to deal with the race conidition of the mode being changed
+        // with a pending background network request.
+        switch(MainActivity.mMode) {
+            case MainActivity.POPULAR_MODE:
+                this.mActiveData = MainActivity.mPopularMovies;
+                break;
+            case MainActivity.TOP_RATED_MODE:
+                this.mActiveData = MainActivity.mTopRatedMovies;
+                break;
+            default:
+                break;
         }
     }
 
@@ -91,16 +145,26 @@ public class MainActivity extends AppCompatActivity implements
         // Save the instance of the progress bar.
         mProgressBar = findViewById(R.id.pb_main_progress_bar);
 
-        mMovieAdapter = new MovieAdapter(this, this.mMovies);
+        // Setup of the recycler view for the main activity.
+        // 1. Create an adapter.
+        mMovieAdapter = new MovieAdapter(this);
 
+        // 2. Cache the resource of the recyclerview with the class instance.
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
-        mRecyclerView.addOnScrollListener(new MovieScrollListener());
+
+        // 3. Make a new LayoutManager of the `GridLayout` type.
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false);
 
+        // 4. Set the properties that the recycleviewer wil use.
+        mRecyclerView.addOnScrollListener(new MovieScrollListener());
         mRecyclerView.setAdapter(mMovieAdapter);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
+        // Set the current active movie data.
+        setCurrentMovieData();
+
+        // Attempt to fetch data.
         this.fetchData();
     }
 
@@ -130,40 +194,9 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void onLoading() {
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void noLoading() {
-        mRecyclerView.setVisibility(View.VISIBLE);
-        mProgressBar.setVisibility(View.INVISIBLE);
-    }
-
     @Override
     public void OnClick(int position) {
 
-    }
-
-    public void fetchData() {
-        Bundle args;
-
-        if (!MainActivity.mLoading) {
-            args = new Bundle();
-            args.putInt(getString(R.string.bk_page_number), MainActivity.mPageNumber++);
-            args.putString(getString(R.string.bk_request_type), getString(R.string.bv_request_type_popular));
-
-            MainActivity.mLoading = true;
-            // Loader Manager for async tasks
-            LoaderManager loaderManager = getSupportLoaderManager();
-            Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.FETCH_DATA_ID);
-
-            if (movieLoader == null) {
-                loaderManager.initLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
-            } else {
-                loaderManager.restartLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
-            }
-        }
     }
 
     //**********************************************************************************************
@@ -209,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements
         switch(id) {
             case MainActivity.FETCH_DATA_ID:
                 return new MovieAsyncTaskLoader(this, args);
-            // break;
             default:
                 Log.d("onCreateLoader Error", "Illegal ID of " + id);
 
@@ -220,28 +252,23 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * @brief Responsible for cleaning up the AsyncTaskLoaders.  Ths assumption of this method is
      * that it is a single point of usage.
-     * @param loader
-     * @param response
+     * @param loader Loader that has finished.
+     * @param response String of the result of the Loader itself.
      */
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String response) {
         // Only process if response contains content.
         if (response != null && !response.isEmpty()) {
             // Add the list of movies to the overall list.
-            for (Movie movie : JsonUtils.parseJsonResponse(response)) {
-                this.mMovies.add(movie);
-            }
+            this.mActiveData.addMovies(JsonUtils.parseJsonResponse(response));
 
             // Inform the movie adapter of the change.
-            this.mMovieAdapter.setMovies(this.mMovies);
-        }
-        else {
-            // If invalid will want to make sure to decrement the page desired.
-            MainActivity.mPageNumber--;
+            this.mMovieAdapter.setMovieData(this.mActiveData);
+            this.mActiveData.incrementPage();
         }
 
         // Ensure that the loading progress bar is made invisible.
-        this.noLoading();
+        this.fetchComplete();
 
         // Ensure that more loading of data can occur.
         MainActivity.mLoading = false;
@@ -251,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoaderReset(@NonNull Loader<String> loader) {
 
     }
+
     //**********************************************************************************************
     // END LOADER METHODS FOR ASYNC TASKS
     //**********************************************************************************************

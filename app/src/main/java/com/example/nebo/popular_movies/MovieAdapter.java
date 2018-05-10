@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.nebo.popular_movies.async.MovieManagedData;
 import com.example.nebo.popular_movies.data.Movie;
 import com.example.nebo.popular_movies.util.MovieURLUtils;
 import com.squareup.picasso.Picasso;
@@ -18,20 +19,28 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
-    private static int mViewHolderCount = 0;
-
     // Cache the instance of the onClickListener desired by the application.
     private MovieAdatperOnClickListener mMovieAdatperOnClickListener = null;
     private List<Movie> mMovies = null;
+    private MovieManagedData mManagedMovies = null;
 
-    public MovieAdapter(MovieAdatperOnClickListener listener, List<Movie> movies) {
+    public MovieAdapter(MovieAdatperOnClickListener listener) {
         this.mMovieAdatperOnClickListener = listener;
-        this.mViewHolderCount = 0;
-        this.mMovies = movies;
     }
 
     public interface MovieAdatperOnClickListener {
         public void OnClick(int position);
+    }
+
+    public MovieManagedData getMovieData() {
+        return this.mManagedMovies;
+    }
+
+    public void setMovieData(MovieManagedData managedMovies) {
+        this.mManagedMovies = managedMovies;
+        if (this.mManagedMovies != null) {
+            this.setMovies(this.mManagedMovies.getMovies());
+        }
     }
 
     public void setMovies(List<Movie> movies) {
