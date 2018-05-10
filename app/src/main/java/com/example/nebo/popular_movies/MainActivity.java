@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private MovieManagedData mActiveData = null;
 
+    private Object lock = new Object();
+
     /**
      * @brief Scroll listener class that when no more vertical in the downward direction can occur
      * will perform a the fetching of a new page of movies.
@@ -110,6 +112,9 @@ public class MainActivity extends AppCompatActivity implements
             // Loader Manager for async tasks
             LoaderManager loaderManager = getSupportLoaderManager();
             Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.FETCH_DATA_ID);
+
+            // Set the visibility due to fetch action being started.
+            this.onFetch();
 
             if (movieLoader == null) {
                 loaderManager.initLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
