@@ -184,13 +184,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        // mMovieAdapter.registerAdapterDataObserver(this.mObserver);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // mMovieAdapter.unregisterAdapterDataObserver(this.mObserver);
     }
 
     //**********************************************************************************************
@@ -209,85 +207,44 @@ public class MainActivity extends AppCompatActivity implements
     public Loader<String> onCreateLoader(int id, final @Nullable Bundle args) {
         Log.d("onCreateLoader", "In on CreateLoader");
         switch(id) {
-            case MainActivity.REFRESH_LOADER_ID:
-                // Need to go to the refresh activity / process.
-                Log.d("onCreateLoader", "Received ID of " + id);
-                return new AsyncTaskLoader<String>(this) {
-                    @Nullable
-                    @Override
-                    public String loadInBackground() {
-                        String response = null;
-                        Log.d("LoadInBackground", "in background task");
-                        URL url = MovieURLUtils.buildPopularURL(); // NetworkUtils.buildUrl("xxx");
-                        try {
-                            response = NetworkUtils.getUrlHttpResponse(url);
-
-                            /*
-                            List<Movie> movies = JsonUtils.parseJsonResponse(response);
-
-                            for (Movie movie : movies) {
-                                Log.d("Movie", movie.toString());
-                            }
-                            */
-                            Log.d("Network Result", response);
-                        }
-                        catch (java.io.IOException e) {
-                            e.printStackTrace();
-                        }
-                        // work from async tasks for getting data i.e. url, getResponse function.
-                        return response;
-                    }
-
-                    @Override
-                    protected void onStartLoading() {
-                        super.onStartLoading();
-                        Log.d("Starting the loading", "Loading");
-                        // check for null args if necessary.
-                        // Likely should set visibility here
-                    }
-
-                    @Override
-                    protected void onStopLoading() {
-                        // super.onStopLoading();
-                        Log.d("Stoped loading", "not loading.");
-                    }
-
-                };
-
             case MainActivity.FETCH_DATA_ID:
                 return new MovieAsyncTaskLoader(this, args);
-                // break;
+            // break;
             default:
                 Log.d("onCreateLoader Error", "Illegal ID of " + id);
 
                 throw new java.lang.IllegalArgumentException("Unsupported ID value.");
         }
-
-        // return null;
     }
 
+    /**
+     * @brief Responsible for cleaning up the AsyncTaskLoaders.  Ths assumption of this method is
+     * that it is a single point of usage.
+     * @param loader
+     * @param response
+     */
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String response) {
-        // loader is complete but might be some errors w.r.t the data
-        // should likely need to set visibility of the views here.
-        if (response == null || response.isEmpty()) {
-
-        }
-        else {
-
-
+        // Only process if response contains content.
+        if (response != null && !response.isEmpty()) {
+            // Add the list of movies to the overall list.
             for (Movie movie : JsonUtils.parseJsonResponse(response)) {
                 this.mMovies.add(movie);
             }
 
+            // Inform the movie adapter of the change.
             this.mMovieAdapter.setMovies(this.mMovies);
-
-            Log.d("Movie Count", Integer.toString(this.mMovies.size()));
+        }
+        else {
+            // If invalid will want to make sure to decrement the page desired.
+            MainActivity.mPageNumber--;
         }
 
+        // Ensure that the loading progress bar is made invisible.
         this.noLoading();
+
+        // Ensure that more loading of data can occur.
         MainActivity.mLoading = false;
-        Log.d("onLoadFinished", "Completed the task");
     }
 
     @Override
