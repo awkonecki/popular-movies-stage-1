@@ -52,6 +52,7 @@ public class MovieAsyncTaskLoader extends AsyncTaskLoader<String> {
         // 2. Fetch popular movies using a specified page.
         // 3. Fetch top rated movies using the default page (1).
         // 4. Fetch top rated movies using a specified page.
+        // 5. Search for movies specified by the user. @TODO
 
         if (this.mArgs != null) {
             page = this.mArgs.getInt(resources.getString(R.string.bk_page_number),

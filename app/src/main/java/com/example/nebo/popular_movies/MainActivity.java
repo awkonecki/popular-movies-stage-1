@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,12 +17,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.nebo.popular_movies.async.MovieAsyncTaskLoader;
 import com.example.nebo.popular_movies.data.Movie;
 import com.example.nebo.popular_movies.util.JsonUtils;
 import com.example.nebo.popular_movies.util.MovieURLUtils;
 import com.example.nebo.popular_movies.util.NetworkUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -32,11 +33,37 @@ public class MainActivity extends AppCompatActivity implements
         MovieAdapter.MovieFetchData {
 
     private static final int REFRESH_LOADER_ID = 13;
-    private static final int FETCH_NEW_PAGE = 14;
+    private static final int FETCH_DATA_ID = 14;
+    private static int mPageNumber = 1;
 
     private MovieAdapter mMovieAdapter = null;
     private RecyclerView mRecyclerView = null;
     private ProgressBar mProgressBar = null;
+
+    private List<Movie> mMovies = new ArrayList<Movie>();
+
+    /**
+     * @brief Scroll listener class that when no more vertical in the downward direction can occur
+     * will perform a the fetching of a new page of movies.
+     * @note Although the listener itself is okay, I believe that this is not really a clean way to
+     * implement this functionality.
+     */
+    private class MovieScrollListener extends RecyclerView.OnScrollListener {
+        /**
+         * @brief If no more vertical scrolling down can occur then will attempt to fetch more data.
+         * @param recyclerView The recycler view that is responsible for displaying the movies.
+         * @param newState Indicates the current state of the RecyclerViewer.
+         */
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+
+            // This method is a member of the layout manager.
+            if (!recyclerView.canScrollVertically(1)) {
+                MainActivity.this.fetchData();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,28 +73,17 @@ public class MainActivity extends AppCompatActivity implements
         // Save the instance of the progress bar.
         mProgressBar = findViewById(R.id.pb_main_progress_bar);
 
-        mMovieAdapter = new MovieAdapter(this, this,null);
+        mMovieAdapter = new MovieAdapter(this, this, this.mMovies);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
-
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
+        mRecyclerView.addOnScrollListener(new MovieScrollListener());
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false);
 
         mRecyclerView.setAdapter(mMovieAdapter);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        // mRecyclerView.setVerticalScrollbarPosition(0);
-
-        // Loader Manager for async tasks
-        LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.REFRESH_LOADER_ID);
-
-        if (movieLoader == null) {
-            loaderManager.initLoader(MainActivity.REFRESH_LOADER_ID, null, this).forceLoad();
-        }
-        else {
-            loaderManager.restartLoader(MainActivity.REFRESH_LOADER_ID, null, this).forceLoad();
-        }
+        this.fetchData();
     }
 
     @Override
@@ -83,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (selectedItemId) {
             case R.id.mi_refresh:
+                this.fetchData();
                 break;
             case R.id.mi_sort:
                 break;
@@ -112,7 +129,20 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void fetchData() {
+        Bundle args = new Bundle();
+        args.putInt(getString(R.string.bk_page_number), MainActivity.mPageNumber++);
+        args.putString(getString(R.string.bk_request_type), getString(R.string.bv_request_type_popular));
 
+        // Loader Manager for async tasks
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.FETCH_DATA_ID);
+
+        if (movieLoader == null) {
+            loaderManager.initLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
+        }
+        else {
+            loaderManager.restartLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
+        }
     }
 
     //**********************************************************************************************
@@ -129,6 +159,19 @@ public class MainActivity extends AppCompatActivity implements
         super.onStop();
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // mMovieAdapter.registerAdapterDataObserver(this.mObserver);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // mMovieAdapter.unregisterAdapterDataObserver(this.mObserver);
+    }
+
     //**********************************************************************************************
     // END ANDROID LIFE-CYCLE METHODS
     //**********************************************************************************************
@@ -189,6 +232,9 @@ public class MainActivity extends AppCompatActivity implements
                     }
 
                 };
+
+            case MainActivity.FETCH_DATA_ID:
+                return new MovieAsyncTaskLoader(this, args);
                 // break;
             default:
                 Log.d("onCreateLoader Error", "Illegal ID of " + id);
@@ -207,11 +253,19 @@ public class MainActivity extends AppCompatActivity implements
 
         }
         else {
-            List<Movie> movies = JsonUtils.parseJsonResponse(response);
-            this.mMovieAdapter = new MovieAdapter(this, this, movies);
+            int verticalPosition = this.mMovies.size();
+
+            for (Movie movie : JsonUtils.parseJsonResponse(response)) {
+                this.mMovies.add(movie);
+            }
+
+            this.mMovieAdapter = new MovieAdapter(this, this, this.mMovies);
             this.mRecyclerView.setAdapter(this.mMovieAdapter);
-            this.noLoading();
+
+            this.mRecyclerView.scrollToPosition(verticalPosition);
         }
+
+        this.noLoading();
 
         Log.d("onLoadFinished", "Completed the task");
     }
