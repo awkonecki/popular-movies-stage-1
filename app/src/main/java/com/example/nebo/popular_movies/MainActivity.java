@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private MovieManagedData mActiveData = null;
 
-    private Object lock = new Object();
-
     /**
      * @brief Scroll listener class that when no more vertical in the downward direction can occur
      * will perform a the fetching of a new page of movies.
