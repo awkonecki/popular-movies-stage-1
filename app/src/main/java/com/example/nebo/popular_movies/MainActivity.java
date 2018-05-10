@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.nebo.popular_movies.async.MovieAsyncTaskLoader;
 import com.example.nebo.popular_movies.data.Movie;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements
      * will perform a the fetching of a new page of movies.
      * @note Although the listener itself is okay, I believe that this is not really a clean way to
      * implement this functionality.
+     * @reference https://stackoverflow.com/questions/36127734/detect-when-recyclerview-reaches-the-bottom-most-position-while-scrolling
      */
     private class MovieScrollListener extends RecyclerView.OnScrollListener {
         /**
@@ -61,8 +63,11 @@ public class MainActivity extends AppCompatActivity implements
 
             // This method is a member of the layout manager.
             if (!recyclerView.canScrollVertically(1)) {
-                MainActivity.this.fetchData();
+                //MainActivity.this.fetchData();
+                Toast.makeText(MainActivity.this, "scrolled", 1).show();
             }
+
+            // Log.d("Focusable value", Integer.toString(recyclerView.));
         }
     }
 
