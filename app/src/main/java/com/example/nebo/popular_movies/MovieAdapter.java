@@ -22,22 +22,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     // Cache the instance of the onClickListener desired by the application.
     private MovieAdatperOnClickListener mMovieAdatperOnClickListener = null;
-    private MovieFetchData mMovieAdapterFetchData = null;
     private List<Movie> mMovies = null;
 
-    public MovieAdapter(MovieAdatperOnClickListener listener, MovieFetchData dataFetcher, List<Movie> movies) {
+    public MovieAdapter(MovieAdatperOnClickListener listener, List<Movie> movies) {
         this.mMovieAdatperOnClickListener = listener;
-        this.mMovieAdapterFetchData = dataFetcher;
-        this.mMovies = movies;
         this.mViewHolderCount = 0;
+        this.mMovies = movies;
     }
 
     public interface MovieAdatperOnClickListener {
         public void OnClick(int position);
     }
 
-    public interface MovieFetchData {
-        public void fetchData();
+    public void setMovies(List<Movie> movies) {
+        this.mMovies = movies;
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -60,17 +59,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         View view = inflater.inflate(R.layout.grid_item, parent, false);
         MovieViewHolder movieViewHolder = new MovieViewHolder(view);
 
-        Log.d("onCreateViewHolder", Integer.toString(this.mViewHolderCount++));
-
-        // movieViewHolder.numberView.setText("View " + Integer.toString(this.mViewHolderCount));
-
         return movieViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         // Required for inheritance from RecyclerView.Adapter due to abstract definition.
-        Log.d("Onbind called", "On bind called " + Integer.toString(position) + " " + Integer.toString(this.getItemCount()));
+        // Log.d("Onbind called", "On bind called " + Integer.toString(position) + " " + Integer.toString(this.getItemCount()));
 
         if (this.mMovies != null && position < this.mMovies.size()) {
             holder.bind(this.mMovies.get(position).getPosterPath());
@@ -78,12 +73,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         else {
             Log.d("onBindViewHolder", "Exceeding the viewholder position.");
             holder.bind("junk");
-        }
-
-        // Determine if need to load another page.
-        if (position > ((this.mMovies.size() * 9) / 10)) {
-            Log.d("onBindViewHolder", "Near the end of the views, should fetch more data.");
-            // this.fetchData();
         }
     }
 
@@ -121,12 +110,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void onClick(int position) {
         if (this.mMovieAdatperOnClickListener != null) {
             this.mMovieAdatperOnClickListener.OnClick(position);
-        }
-    }
-
-    public void fetchData() {
-        if (this.mMovieAdapterFetchData != null) {
-            this.mMovieAdapterFetchData.fetchData();
         }
     }
 }

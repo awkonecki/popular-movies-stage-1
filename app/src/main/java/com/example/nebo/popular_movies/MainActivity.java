@@ -30,8 +30,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<String>,
-        MovieAdapter.MovieAdatperOnClickListener,
-        MovieAdapter.MovieFetchData {
+        MovieAdapter.MovieAdatperOnClickListener {
+
+    private static boolean mLoading = false;
 
     private static final int REFRESH_LOADER_ID = 13;
     private static final int FETCH_DATA_ID = 14;
@@ -61,6 +62,17 @@ public class MainActivity extends AppCompatActivity implements
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
 
+            GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+
+            // int visibleItems = layoutManager.getChildCount();
+            int totalItems = layoutManager.getItemCount();
+            // int firstPosition = layoutManager.findFirstVisibleItemPosition();
+            int lastPosition = layoutManager.findLastVisibleItemPosition();
+
+            if (lastPosition > (totalItems * 9 / 10)) {
+                MainActivity.this.fetchData();
+            }
+
             // This method is a member of the layout manager.
             if (!recyclerView.canScrollVertically(1)) {
                 //MainActivity.this.fetchData();
@@ -79,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements
         // Save the instance of the progress bar.
         mProgressBar = findViewById(R.id.pb_main_progress_bar);
 
-        mMovieAdapter = new MovieAdapter(this, this, this.mMovies);
+        mMovieAdapter = new MovieAdapter(this, this.mMovies);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
         mRecyclerView.addOnScrollListener(new MovieScrollListener());
@@ -133,21 +145,24 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    @Override
     public void fetchData() {
-        Bundle args = new Bundle();
-        args.putInt(getString(R.string.bk_page_number), MainActivity.mPageNumber++);
-        args.putString(getString(R.string.bk_request_type), getString(R.string.bv_request_type_popular));
+        Bundle args;
 
-        // Loader Manager for async tasks
-        LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.FETCH_DATA_ID);
+        if (!MainActivity.mLoading) {
+            args = new Bundle();
+            args.putInt(getString(R.string.bk_page_number), MainActivity.mPageNumber++);
+            args.putString(getString(R.string.bk_request_type), getString(R.string.bv_request_type_popular));
 
-        if (movieLoader == null) {
-            loaderManager.initLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
-        }
-        else {
-            loaderManager.restartLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
+            MainActivity.mLoading = true;
+            // Loader Manager for async tasks
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Loader<Cursor> movieLoader = loaderManager.getLoader(MainActivity.FETCH_DATA_ID);
+
+            if (movieLoader == null) {
+                loaderManager.initLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
+            } else {
+                loaderManager.restartLoader(MainActivity.FETCH_DATA_ID, args, this).forceLoad();
+            }
         }
     }
 
@@ -259,20 +274,19 @@ public class MainActivity extends AppCompatActivity implements
 
         }
         else {
-            int verticalPosition = this.mMovies.size();
+
 
             for (Movie movie : JsonUtils.parseJsonResponse(response)) {
                 this.mMovies.add(movie);
             }
 
-            this.mMovieAdapter = new MovieAdapter(this, this, this.mMovies);
-            this.mRecyclerView.setAdapter(this.mMovieAdapter);
+            this.mMovieAdapter.setMovies(this.mMovies);
 
-            this.mRecyclerView.scrollToPosition(verticalPosition);
+            Log.d("Movie Count", Integer.toString(this.mMovies.size()));
         }
 
         this.noLoading();
-
+        MainActivity.mLoading = false;
         Log.d("onLoadFinished", "Completed the task");
     }
 
