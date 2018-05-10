@@ -8,4 +8,13 @@
     <string name="mi_sort_content_description">Sort by user selection.</string>
     <string name="mi_settings_title">Settings</string>
     <string name="mi_settings_content_description">Settings for the application.</string>
+
+    <!-- Bundle Keys -->
+    <string name="bk_page_number" translatable="false">page</string>
+    <string name="bk_request_type" translatable="false">type</string>
+
+    <!-- Bundle Values -->
+    <string name="bv_request_type_popular" translatable="false">popular</string>
+    <string name="bv_request_type_top_rated" translatable="false">top rated</string>
+    <string name="bv_request_type_search" translatable="false">search</string>
 </resources>

@@ -13,6 +13,7 @@ import com.example.nebo.popular_movies.data.Movie;
 import com.example.nebo.popular_movies.util.MovieURLUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
@@ -21,18 +22,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     // Cache the instance of the onClickListener desired by the application.
     private MovieAdatperOnClickListener mMovieAdatperOnClickListener = null;
-
-    // Adapter copy of the Movies
     private List<Movie> mMovies = null;
 
     public MovieAdapter(MovieAdatperOnClickListener listener, List<Movie> movies) {
         this.mMovieAdatperOnClickListener = listener;
-        this.mMovies = movies;
         this.mViewHolderCount = 0;
+        this.mMovies = movies;
     }
 
     public interface MovieAdatperOnClickListener {
         public void OnClick(int position);
+    }
+
+    public void setMovies(List<Movie> movies) {
+        this.mMovies = movies;
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -55,22 +59,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         View view = inflater.inflate(R.layout.grid_item, parent, false);
         MovieViewHolder movieViewHolder = new MovieViewHolder(view);
 
-        Log.d("onCreateViewHolder", Integer.toString(this.mViewHolderCount++));
-
-        // movieViewHolder.numberView.setText("View " + Integer.toString(this.mViewHolderCount));
-
         return movieViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         // Required for inheritance from RecyclerView.Adapter due to abstract definition.
-        Log.d("Onbind called", "On bind called " + Integer.toString(position));
+        // Log.d("Onbind called", "On bind called " + Integer.toString(position) + " " + Integer.toString(this.getItemCount()));
 
         if (this.mMovies != null && position < this.mMovies.size()) {
             holder.bind(this.mMovies.get(position).getPosterPath());
         }
         else {
+            Log.d("onBindViewHolder", "Exceeding the viewholder position.");
             holder.bind("junk");
         }
     }
@@ -89,6 +90,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
 
         public void bind(String imageURL) {
+            // MovieAdapter.this.notifyItemRangeChanged(0,0);
             Picasso.get().load(imageURL).error(R.drawable.image_placeholder).into(this.poster);
             // this.view.setText(viewData);
         }
@@ -96,6 +98,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         @Override
         public void onClick(View v) {
 
+            // getAdapterPosition();
             Log.d("OnClick",
                     "Adapter Position " + Integer.toString(getAdapterPosition()) +
                             " Layout Position " + Integer.toString(getLayoutPosition()) +
@@ -105,6 +108,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     public void onClick(int position) {
-        this.mMovieAdatperOnClickListener.OnClick(position);
+        if (this.mMovieAdatperOnClickListener != null) {
+            this.mMovieAdatperOnClickListener.OnClick(position);
+        }
     }
 }

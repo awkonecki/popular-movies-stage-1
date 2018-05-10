@@ -12,7 +12,7 @@ import java.net.URL;
  * encrypted.  This is beyond the scope of this project however.
  */
 public class MovieURLUtils {
-    private static final int DEFAULT_PAGE_NUM = 1;
+    public static final int DEFAULT_PAGE_NUM = 1;
     private static final int MIN_PAGE_NUM = 1;
     private static final int MAX_PAGE_NUM = 1000;
 
