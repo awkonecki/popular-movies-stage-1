@@ -80,7 +80,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             holder.bind(this.mMovies.get(position).getPosterPath());
         }
         else {
-            Log.d("onBindViewHolder", "Exceeding the viewholder position.");
             holder.bind("junk");
         }
     }
@@ -112,7 +111,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                     "Adapter Position " + Integer.toString(getAdapterPosition()) +
                             " Layout Position " + Integer.toString(getLayoutPosition()) +
                             " Item Id " + Long.toString(getItemId()));
-            MovieAdapter.this.onClick(0);
+            MovieAdapter.this.onClick(getAdapterPosition());
         }
     }
 

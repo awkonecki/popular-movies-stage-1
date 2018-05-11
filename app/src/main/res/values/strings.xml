@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">popular-movies</string>
 
+    <!-- Default Values -->
+    <string name="default_title">Best Moive Title Ever</string>
+
     <!-- Menu Values -->
     <string name="mi_refresh_title">Refresh</string>
     <string name="mi_refresh_content_description">Query for information over a network connection.</string>
@@ -8,6 +11,10 @@
     <string name="mi_sort_content_description">Sort by user selection.</string>
     <string name="mi_settings_title">Settings</string>
     <string name="mi_settings_content_description">Settings for the application.</string>
+
+    <!-- Intent Keys -->
+    <string name="ik_movie_poster" translatable="false">poster</string>
+    <string name="ik_movie_title" translatable="false">title</string>
 
     <!-- Bundle Keys -->
     <string name="bk_page_number" translatable="false">page</string>

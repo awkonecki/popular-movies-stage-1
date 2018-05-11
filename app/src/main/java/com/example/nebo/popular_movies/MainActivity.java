@@ -1,5 +1,6 @@
 package com.example.nebo.popular_movies;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +19,6 @@ import android.widget.ProgressBar;
 
 import com.example.nebo.popular_movies.async.MovieAsyncTaskLoader;
 import com.example.nebo.popular_movies.async.MovieManagedData;
-import com.example.nebo.popular_movies.data.Movie;
 import com.example.nebo.popular_movies.util.JsonUtils;
 
 public class MainActivity extends AppCompatActivity implements
@@ -199,7 +199,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void OnClick(int position) {
+        Log.d("MainActivity onClick", Integer.toString(position));
+        Intent intent = new Intent(this, MovieDetailActivity.class);
+        intent.putExtra(getString(R.string.ik_movie_poster), this.mActiveData.getMovies().get(position).getPosterPath());
+        intent.putExtra(getString(R.string.ik_movie_title), this.mActiveData.getMovies().get(position).getTitle());
 
+        startActivity(intent);
     }
 
     //**********************************************************************************************

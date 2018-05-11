@@ -50,7 +50,7 @@ public class MovieURLUtils {
      */
     public static URL buildPopularURL(int page) {
         if (page > MovieURLUtils.MAX_PAGE_NUM || page < MovieURLUtils.MIN_PAGE_NUM) {
-            Log.d("Popular URL", "Page value out of range " + page + " using default.");
+            // Log.d("Popular URL", "Page value out of range " + page + " using default.");
             page = MovieURLUtils.DEFAULT_PAGE_NUM;
         }
 
@@ -73,7 +73,7 @@ public class MovieURLUtils {
      */
     public static URL buildTopRatedURL(int page) {
         if (page > MovieURLUtils.MAX_PAGE_NUM || page < MovieURLUtils.MIN_PAGE_NUM) {
-            Log.d("Top Rated URL", "Page value out of range " + page + " using default.");
+            // Log.d("Top Rated URL", "Page value out of range " + page + " using default.");
             page = MovieURLUtils.DEFAULT_PAGE_NUM;
         }
 
