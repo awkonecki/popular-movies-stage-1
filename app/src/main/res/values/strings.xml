@@ -15,6 +15,10 @@
     <!-- Intent Keys -->
     <string name="ik_movie_poster" translatable="false">poster</string>
     <string name="ik_movie_title" translatable="false">title</string>
+    <string name="ik_movie_backdrop" translatable="false">backdrop</string>
+    <string name="ik_movie_synopsis" translatable="false">synopsis</string>
+    <string name="ik_user_rating" translatable="false">rating</string>
+    <string name="ik_release_date" translatable="false">date</string>
 
     <!-- Bundle Keys -->
     <string name="bk_page_number" translatable="false">page</string>
@@ -24,4 +28,10 @@
     <string name="bv_request_type_popular" translatable="false">popular</string>
     <string name="bv_request_type_top_rated" translatable="false">top rated</string>
     <string name="bv_request_type_search" translatable="false">search</string>
+
+    <!-- Sorting Values Array -->
+    <string-array name="sav_sorting">
+        <item>Popular</item>
+        <item>Top Rated</item>
+    </string-array>
 </resources>

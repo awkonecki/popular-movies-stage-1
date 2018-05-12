@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
 
         // 3. Make a new LayoutManager of the `GridLayout` type.
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
 
         // 4. Set the properties that the recycleviewer wil use.
         mRecyclerView.addOnScrollListener(new MovieScrollListener());
@@ -203,6 +203,10 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, MovieDetailActivity.class);
         intent.putExtra(getString(R.string.ik_movie_poster), this.mActiveData.getMovies().get(position).getPosterPath());
         intent.putExtra(getString(R.string.ik_movie_title), this.mActiveData.getMovies().get(position).getTitle());
+        intent.putExtra(getString(R.string.ik_movie_backdrop), this.mActiveData.getMovies().get(position).getBackdropPath());
+        intent.putExtra(getString(R.string.ik_movie_synopsis), this.mActiveData.getMovies().get(position).getOverview());
+        intent.putExtra(getString(R.string.ik_user_rating), this.mActiveData.getMovies().get(position).getVote());
+        intent.putExtra(getString(R.string.ik_release_date), this.mActiveData.getMovies().get(position).getReleaseDate());
 
         startActivity(intent);
     }
