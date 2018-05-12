@@ -5,9 +5,7 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:id="@+id/detail_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:backgroundTint="@android:color/background_light"
-    android:layoutAnimation="@anim/reel_rotation">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/iv_background_detail"
