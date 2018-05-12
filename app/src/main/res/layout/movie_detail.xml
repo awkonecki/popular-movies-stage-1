@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="@android:color/background_light"
-    android:background="@drawable/image_placeholder">
+    android:layoutAnimation="@anim/reel_rotation">
 
     <ImageView
         android:id="@+id/iv_background_detail"

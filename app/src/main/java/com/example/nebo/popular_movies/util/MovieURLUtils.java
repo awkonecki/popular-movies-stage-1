@@ -22,6 +22,7 @@ public class MovieURLUtils {
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
     private static final String SIZE_W185 = "w185";
+    private static final String SIZE_W342 = "w342";
 
     // @TODO determine if image size is needed for backdrop later.
 
@@ -94,7 +95,7 @@ public class MovieURLUtils {
         }
 
         uri = Uri.parse(MovieURLUtils.IMAGE_BASE_URL).buildUpon().
-                appendEncodedPath(MovieURLUtils.SIZE_W185).
+                appendEncodedPath(MovieURLUtils.SIZE_W342).
                 appendEncodedPath(path).build();
 
         try {
