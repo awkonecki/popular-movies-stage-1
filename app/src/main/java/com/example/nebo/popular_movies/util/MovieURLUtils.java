@@ -22,6 +22,8 @@ public class MovieURLUtils {
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
     private static final String SIZE_W185 = "w185";
+    private static final String SIZE_W342 = "w342";
+    private static final String SIZE_W500 = "w500";
 
     // @TODO determine if image size is needed for backdrop later.
 
@@ -50,7 +52,7 @@ public class MovieURLUtils {
      */
     public static URL buildPopularURL(int page) {
         if (page > MovieURLUtils.MAX_PAGE_NUM || page < MovieURLUtils.MIN_PAGE_NUM) {
-            Log.d("Popular URL", "Page value out of range " + page + " using default.");
+            // Log.d("Popular URL", "Page value out of range " + page + " using default.");
             page = MovieURLUtils.DEFAULT_PAGE_NUM;
         }
 
@@ -73,7 +75,7 @@ public class MovieURLUtils {
      */
     public static URL buildTopRatedURL(int page) {
         if (page > MovieURLUtils.MAX_PAGE_NUM || page < MovieURLUtils.MIN_PAGE_NUM) {
-            Log.d("Top Rated URL", "Page value out of range " + page + " using default.");
+            // Log.d("Top Rated URL", "Page value out of range " + page + " using default.");
             page = MovieURLUtils.DEFAULT_PAGE_NUM;
         }
 
@@ -94,7 +96,7 @@ public class MovieURLUtils {
         }
 
         uri = Uri.parse(MovieURLUtils.IMAGE_BASE_URL).buildUpon().
-                appendEncodedPath(MovieURLUtils.SIZE_W185).
+                appendEncodedPath(MovieURLUtils.SIZE_W500).
                 appendEncodedPath(path).build();
 
         try {

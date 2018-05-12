@@ -23,6 +23,7 @@
 
         <activity
             android:name=".MovieDetailActivity"
+            android:label="@string/default_title"
             android:parentActivityName=".MainActivity">
         </activity>
 

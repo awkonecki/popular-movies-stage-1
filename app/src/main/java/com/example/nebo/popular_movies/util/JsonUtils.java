@@ -77,7 +77,7 @@ public class JsonUtils {
             id = movieJsonObject.getInt(JsonUtils.MOVIE_ID_KEY);
             title = movieJsonObject.getString(JsonUtils.MOVIE_TITLE_KEY);
             overview = movieJsonObject.getString(JsonUtils.MOVIE_OVERVIEW_KEY);
-            backdropPath = movieJsonObject.getString(JsonUtils.MOVIE_BACKDROP_PATH_KEY);
+            backdropPath = MovieURLUtils.buildImageUrl(movieJsonObject.getString(JsonUtils.MOVIE_BACKDROP_PATH_KEY)).toString();
             posterPath = MovieURLUtils.buildImageUrl(movieJsonObject.getString(JsonUtils.MOVIE_POSTER_PATH_KEY)).toString();
             date = movieJsonObject.getString(JsonUtils.MOVIE_DATE_KEY);
             popularity = movieJsonObject.getDouble(JsonUtils.MOVIE_POPULARITY_KEY);

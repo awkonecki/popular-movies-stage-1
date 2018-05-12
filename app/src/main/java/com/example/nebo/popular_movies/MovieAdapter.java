@@ -80,7 +80,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             holder.bind(this.mMovies.get(position).getPosterPath());
         }
         else {
-            Log.d("onBindViewHolder", "Exceeding the viewholder position.");
             holder.bind("junk");
         }
     }
@@ -89,18 +88,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         private TextView view = null;
         private TextView numberView = null;
         private ImageView poster = null;
+        private ImageView reel = null;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            this.view = (TextView) itemView.findViewById(R.id.tv_item_text);
-            this.numberView = (TextView) itemView.findViewById(R.id.tv_view_index);
+            // this.view = (TextView) itemView.findViewById(R.id.tv_item_text);
+            // this.numberView = (TextView) itemView.findViewById(R.id.tv_view_index);
             this.poster = (ImageView) itemView.findViewById(R.id.iv_movie_poster);
+            // this.reel = (ImageView) itemView.findViewById(R.id.iv_reel);
             itemView.setOnClickListener(this);
         }
 
         public void bind(String imageURL) {
             // MovieAdapter.this.notifyItemRangeChanged(0,0);
             Picasso.get().load(imageURL).error(R.drawable.image_placeholder).into(this.poster);
+            // Picasso.get().load(R.drawable.ic_movie_reel).into(this.reel);
             // this.view.setText(viewData);
         }
 
@@ -112,7 +114,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                     "Adapter Position " + Integer.toString(getAdapterPosition()) +
                             " Layout Position " + Integer.toString(getLayoutPosition()) +
                             " Item Id " + Long.toString(getItemId()));
-            MovieAdapter.this.onClick(0);
+            MovieAdapter.this.onClick(getAdapterPosition());
         }
     }
 
