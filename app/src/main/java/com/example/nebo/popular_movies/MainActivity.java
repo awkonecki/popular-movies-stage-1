@@ -218,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Do something here
+        Log.d("onSaveInstanceState", "saving");
     }
 
     @Override
