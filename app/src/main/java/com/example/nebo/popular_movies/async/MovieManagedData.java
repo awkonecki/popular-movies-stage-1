@@ -14,6 +14,9 @@ public class MovieManagedData implements Parcelable{
     private int mPage = MovieURLUtils.DEFAULT_PAGE_NUM;
     private int mFirstVisible = 0;
 
+    public MovieManagedData() {
+    }
+
     private MovieManagedData(Parcel in) {
         if (in != null) {
             in.readTypedList(this.mMovies, Movie.CREATOR);
