@@ -164,11 +164,28 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
+        if (savedInstanceState != null) {
+            MainActivity.mPopularMovies =
+                    savedInstanceState.getParcelable(getString(R.string.bsik_popular));
+            MainActivity.mTopRatedMovies =
+                    savedInstanceState.getParcelable(getString(R.string.bsik_top_rated));
+            MainActivity.mMode =
+                    savedInstanceState.getInt(getString(R.string.bsik_mode),
+                            MainActivity.DEFAULT_MODE);
+        }
+
         // Set the current active movie data.
         setCurrentMovieData();
 
-        // Attempt to fetch data.
-        this.fetchData();
+        // Manage the view if the instance state exists.
+        if (this.mActiveData.getMovies().size() > 0) {
+            this.mMovieAdapter.setMovieData(this.mActiveData);
+            gridLayoutManager.scrollToPosition(this.mActiveData.getFirstVisible());
+        }
+        else {
+            // Attempt to fetch data.
+            this.fetchData();
+        }
     }
 
     @Override
@@ -217,7 +234,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Do something here
+
+        // Save the current stack of movies already queried.
+        outState.putParcelable(getString(R.string.bsik_popular), MainActivity.mPopularMovies);
+        outState.putParcelable(getString(R.string.bsik_top_rated), MainActivity.mTopRatedMovies);
+        outState.putInt(getString(R.string.bsik_mode), mMode);
     }
 
     @Override

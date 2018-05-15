@@ -23,6 +23,9 @@
     <!-- Bundle Keys -->
     <string name="bk_page_number" translatable="false">page</string>
     <string name="bk_request_type" translatable="false">type</string>
+    <string name="bsik_popular" translatable="false">popular</string>
+    <string name="bsik_top_rated" translatable="false">top rated</string>
+    <string name="bsik_mode" translatable="false">mode</string>
 
     <!-- Bundle Values -->
     <string name="bv_request_type_popular" translatable="false">popular</string>
