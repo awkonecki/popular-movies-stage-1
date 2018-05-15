@@ -217,8 +217,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Do something here
-        Log.d("onSaveInstanceState", "saving");
+
+        // Save the current stack of movies already queried.
+
     }
 
     @Override
