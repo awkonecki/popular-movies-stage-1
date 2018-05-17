@@ -159,6 +159,9 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    // @TODO at the moment the scrolling can become quite jumpy but dont really know if it is the
+    // device or an in-efficiency.  Feel free to note if this is due to improper layout but please
+    // indicate where / why so I am not wasting time.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

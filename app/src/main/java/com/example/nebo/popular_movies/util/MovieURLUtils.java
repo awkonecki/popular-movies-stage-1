@@ -33,7 +33,7 @@ public class MovieURLUtils {
     // QUERY VALUES
     private static final String API_KEY =
             // !!! Place key below.
-            "XXX";
+            "24d9b4cd6bd46e82c85c2745f621b805";
 
     /**
      * @brief Construct a valid URL with the popular movie endpoint.
