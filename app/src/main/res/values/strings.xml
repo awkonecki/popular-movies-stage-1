@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">popular-movies</string>
 
+    <!-- Labels -->
+    <string name="tv_label_title" translatable="true">Title</string>
+    <string name="tv_label_release_date" translatable="true">Release Date</string>
+    <string name="tv_label_rating" translatable="true">Rating</string>
+    <string name="tv_label_summary" translatable="true">Summary</string>
+
     <!-- Default Values -->
     <string name="default_title">Best Moive Title Ever</string>
 
@@ -13,6 +19,7 @@
     <string name="mi_settings_content_description">Settings for the application.</string>
 
     <!-- Intent Keys -->
+    <string name="ik_movie_id" translatable="false">id</string>
     <string name="ik_movie_poster" translatable="false">poster</string>
     <string name="ik_movie_title" translatable="false">title</string>
     <string name="ik_movie_backdrop" translatable="false">backdrop</string>
