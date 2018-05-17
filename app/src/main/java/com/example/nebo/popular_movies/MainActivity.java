@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final int FETCH_DATA_ID = 14;
     private static final int POPULAR_MODE = 0;
     private static final int TOP_RATED_MODE = 1;
-    private static final int FAVORITE_MODE = 2;
-    private static final int SEARCH_MODE = 3;
+    // private static final int FAVORITE_MODE = 2;
+    // private static final int SEARCH_MODE = 3;
     private static final int DEFAULT_MODE = MainActivity.POPULAR_MODE;
 
     private MovieAdapter mMovieAdapter = null;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements
      * @brief Fetch the data from the appropriate source based on the current active data set.
      * @TODO Account for each type of data-set.  Currently only processing for popular.
      */
-    public void fetchData() {
+    private void fetchData() {
         Bundle args;
 
         if (!MainActivity.mLoading) {
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
      * @TODO the visible piece is going back to the initial upon selection changes.  Is this due to
      * the mAdapter when it populates the views setting it back to zero???
      */
-    public void setView() {
+    private void setView() {
         GridLayoutManager gridLayoutManager = (GridLayoutManager) this.mRecyclerView.getLayoutManager();
 
         // Manage the view if the instance state exists.
@@ -232,9 +232,6 @@ public class MainActivity extends AppCompatActivity implements
         int selectedItemId = item.getItemId();
 
         switch (selectedItemId) {
-            case R.id.mi_refresh:
-                this.fetchData();
-                break;
             case R.id.menu_item_sort_popular:
                 if (!item.isChecked()) {
                     item.setChecked(true);

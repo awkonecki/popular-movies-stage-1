@@ -2,13 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/mi_refresh"
-        android:title="@string/mi_refresh_title"
-        android:icon="@android:drawable/ic_menu_rotate"
-        android:contentDescription="@string/mi_refresh_content_description"
-        app:showAsAction="ifRoom" />
-
     <group
         android:checkableBehavior="single"
         android:id="@+id/mi_group_sorting_order"

@@ -10,6 +10,7 @@
     android:background="@android:color/black">
 
     <ImageView
+        android:contentDescription="@string/description_poster_image"
         android:id="@+id/iv_movie_poster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

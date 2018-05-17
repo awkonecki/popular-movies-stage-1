@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <ImageView
+        android:contentDescription="@string/description_background_image"
         android:id="@+id/iv_background_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

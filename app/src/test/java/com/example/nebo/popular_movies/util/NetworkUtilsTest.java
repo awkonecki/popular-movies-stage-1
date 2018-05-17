@@ -1,7 +1,5 @@
 package com.example.nebo.popular_movies.util;
 
-import static org.mockito.Mockito.*;
-import android.net.Uri;
 
 import org.junit.Test;
 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovieManagedData implements Parcelable{
-    private List<Movie> mMovies = new ArrayList<Movie>();
+    private final List<Movie> mMovies = new ArrayList<Movie>();
     private int mPage = MovieURLUtils.DEFAULT_PAGE_NUM;
     private int mFirstVisible = 0;
     private String mType = null;
@@ -44,10 +44,6 @@ public class MovieManagedData implements Parcelable{
         this.mPage++;
     }
 
-    public void decrementPage() {
-        this.mPage--;
-    }
-
     public int getPage() {
         return this.mPage;
     }
@@ -56,7 +52,7 @@ public class MovieManagedData implements Parcelable{
         return this.mMovies;
     }
 
-    public int addMovies(List<Movie> movies) {
+    public void addMovies(List<Movie> movies) {
         int count = 0;
 
         if (movies != null) {
@@ -68,7 +64,7 @@ public class MovieManagedData implements Parcelable{
             }
         }
 
-        return count;
+        return;
     }
 
     @Override

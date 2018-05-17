@@ -2,19 +2,15 @@ package com.example.nebo.popular_movies;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.nebo.popular_movies.async.MovieManagedData;
 import com.example.nebo.popular_movies.data.Movie;
-import com.example.nebo.popular_movies.util.MovieURLUtils;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
@@ -29,7 +25,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     public interface MovieAdatperOnClickListener {
-        public void OnClick(int position);
+        void OnClick(int position);
     }
 
     public MovieManagedData getMovieData() {
@@ -43,7 +39,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
     }
 
-    public void setMovies(List<Movie> movies) {
+    private void setMovies(List<Movie> movies) {
         this.mMovies = movies;
         this.notifyDataSetChanged();
     }
@@ -66,9 +62,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.grid_item, parent, false);
-        MovieViewHolder movieViewHolder = new MovieViewHolder(view);
 
-        return movieViewHolder;
+        return new MovieViewHolder(view);
     }
 
     @Override
@@ -85,40 +80,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView view = null;
-        private TextView numberView = null;
         private ImageView poster = null;
-        private ImageView reel = null;
 
-        public MovieViewHolder(View itemView) {
+        MovieViewHolder(View itemView) {
             super(itemView);
-            // this.view = (TextView) itemView.findViewById(R.id.tv_item_text);
-            // this.numberView = (TextView) itemView.findViewById(R.id.tv_view_index);
             this.poster = (ImageView) itemView.findViewById(R.id.iv_movie_poster);
-            // this.reel = (ImageView) itemView.findViewById(R.id.iv_reel);
             itemView.setOnClickListener(this);
         }
 
-        public void bind(String imageURL) {
-            // MovieAdapter.this.notifyItemRangeChanged(0,0);
+        void bind(String imageURL) {
             Picasso.get().load(imageURL).error(R.drawable.image_placeholder).into(this.poster);
-            // Picasso.get().load(R.drawable.ic_movie_reel).into(this.reel);
-            // this.view.setText(viewData);
         }
 
         @Override
         public void onClick(View v) {
-
-            // getAdapterPosition();
-            Log.d("OnClick",
-                    "Adapter Position " + Integer.toString(getAdapterPosition()) +
-                            " Layout Position " + Integer.toString(getLayoutPosition()) +
-                            " Item Id " + Long.toString(getItemId()));
             MovieAdapter.this.onClick(getAdapterPosition());
         }
     }
 
-    public void onClick(int position) {
+    private void onClick(int position) {
         if (this.mMovieAdatperOnClickListener != null) {
             this.mMovieAdatperOnClickListener.OnClick(position);
         }
