@@ -23,16 +23,6 @@ public class MovieAsyncTaskLoader extends AsyncTaskLoader<String> {
         this.mArgs = args;
     }
 
-    public MovieAsyncTaskLoader(Context context) {
-        super(context);
-        this.mArgs = null;
-    }
-
-    @Override
-    protected void onStartLoading() {
-        super.onStartLoading();
-    }
-
     /**
      * @brief Provides the actual set of work to be accomplished by the async task loader.
      * @return String of a serialized JSON response from the desired endpoint.
@@ -90,11 +80,6 @@ public class MovieAsyncTaskLoader extends AsyncTaskLoader<String> {
         }
 
         return response;
-    }
-
-    @Override
-    protected void onStopLoading() {
-        super.onStopLoading();
     }
 
     @Override

@@ -7,7 +7,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.nebo.popular_movies.data.Movie;
 import com.squareup.picasso.Picasso;
@@ -32,7 +31,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent == null) {
-            Toast.makeText(this, "null intent", 1).show();
             finish();
         }
 

@@ -20,14 +20,6 @@ public class Movie implements Parcelable {
     private String mReleaseDate;
 
     /**
-     * @brief default constructor that will not populate any of the actual movie attributes.
-     */
-    public Movie() {
-        Movie.mMovieCount++;
-        this.mMovieInstance = Movie.mMovieCount;
-    }
-
-    /**
      * @brief Attribute detailed constructor.
      * @param title String that represents the title of the movie.
      * @param id Integer that represents the external id of the movie.
@@ -88,37 +80,6 @@ public class Movie implements Parcelable {
     //**********************************************************************************************
     // CLASS ACCESSORS
     //**********************************************************************************************
-    public void setTitle(String title) {
-        this.mTitle = title;
-    }
-
-    public void setID(int id) {
-        this.mID = id;
-    }
-
-    public void setOverview(String overview) {
-        this.mOverview = overview;
-    }
-
-    public void setPopularity(double value) {
-        this.mPopularity = value;
-    }
-
-    public void setVote(double value) {
-        this.mVoteAverage = value;
-    }
-
-    public void setPosterPath(String path) {
-        this.mPosterPath = path;
-    }
-
-    public void setBackdropPath(String path) {
-        this.mBackdropPath = path;
-    }
-
-    public void setDate(String date) {
-        this.mReleaseDate = date;
-    }
 
     public String getTitle() {
         return this.mTitle;
@@ -138,22 +99,6 @@ public class Movie implements Parcelable {
 
     public String getReleaseDate() {
         return this.mReleaseDate;
-    }
-
-    public int getMovieCount() {
-        return Movie.mMovieCount;
-    }
-
-    public int getMovieInstance() {
-        return this.mMovieInstance;
-    }
-
-    public int getMovieID() {
-        return this.mID;
-    }
-
-    public double getPopularity() {
-        return this.mPopularity;
     }
 
     public double getVote() {

@@ -20,8 +20,6 @@ public class MovieURLUtils {
     private static final String POPULAR_MOVIE_ENDPOINT = "movie/popular";
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
-    private static final String SIZE_W185 = "w185";
-    private static final String SIZE_W342 = "w342";
     private static final String SIZE_W500 = "w500";
 
     // @TODO determine if image size is needed for backdrop later.
@@ -34,6 +32,7 @@ public class MovieURLUtils {
     private static final String API_KEY =
             // !!! Place key below.
             "XXX";
+<<<<<<< HEAD
 
     /**
      * @brief Construct a valid URL with the popular movie endpoint.
@@ -42,6 +41,8 @@ public class MovieURLUtils {
     public static URL buildPopularURL() {
         return MovieURLUtils.buildUrl(MovieURLUtils.POPULAR_MOVIE_ENDPOINT, 1);
     }
+=======
+>>>>>>> d7cb17b... Lint Clean-up
 
     /**
      * @brief Construct a valid URL with the popular movie endpoint specifying a desired page.
@@ -56,14 +57,6 @@ public class MovieURLUtils {
         }
 
         return MovieURLUtils.buildUrl(MovieURLUtils.POPULAR_MOVIE_ENDPOINT, page);
-    }
-
-    /**
-     * @brief Construct a valid URL with the top rated movie endpoint.
-     * @return URL with the top rated moive as the endpoint.
-     */
-    public static URL buildTopRatedURL() {
-        return MovieURLUtils.buildUrl(MovieURLUtils.TOP_RATED_ENDPOINT, 1);
     }
 
     /**
