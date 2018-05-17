@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,9 +35,10 @@ public class MainActivity extends AppCompatActivity implements
     private MovieAdapter mMovieAdapter = null;
     private RecyclerView mRecyclerView = null;
     private ProgressBar mProgressBar = null;
+    private static Menu mMenu = null;
 
-    private static MovieManagedData mPopularMovies = new MovieManagedData();
-    private static MovieManagedData mTopRatedMovies = new MovieManagedData();
+    private static MovieManagedData mPopularMovies = null;
+    private static MovieManagedData mTopRatedMovies = null;
     private static int mMode = MainActivity.DEFAULT_MODE;
 
     private MovieManagedData mActiveData = null;
@@ -103,8 +103,7 @@ public class MainActivity extends AppCompatActivity implements
         if (!MainActivity.mLoading) {
             args = new Bundle();
             args.putInt(getString(R.string.bk_page_number), this.mActiveData.getPage());
-            args.putString(getString(R.string.bk_request_type),
-                    getString(R.string.bv_request_type_popular));
+            args.putString(getString(R.string.bk_request_type), this.mActiveData.getType());
 
             MainActivity.mLoading = true;
             // Loader Manager for async tasks
@@ -140,6 +139,29 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * @brief Sets the data for the recyclerviewer adapter instance and attempts to set the correct
+     * visible element.
+     * @TODO the visible piece is going back to the initial upon selection changes.  Is this due to
+     * the mAdapter when it populates the views setting it back to zero???
+     */
+    public void setView() {
+        GridLayoutManager gridLayoutManager = (GridLayoutManager) this.mRecyclerView.getLayoutManager();
+
+        // Manage the view if the instance state exists.
+        if (this.mActiveData.getMovies().size() > 0) {
+            this.mMovieAdapter.setMovieData(this.mActiveData);
+            gridLayoutManager.scrollToPosition(this.mActiveData.getFirstVisible());
+        }
+        else {
+            // Attempt to fetch data.
+            this.fetchData();
+        }
+    }
+
+    // @TODO at the moment the scrolling can become quite jumpy but dont really know if it is the
+    // device or an in-efficiency.  Feel free to note if this is due to improper layout but please
+    // indicate where / why so I am not wasting time.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,7 +178,8 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
 
         // 3. Make a new LayoutManager of the `GridLayout` type.
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,
+                2, GridLayoutManager.VERTICAL, false);
 
         // 4. Set the properties that the recycleviewer wil use.
         mRecyclerView.addOnScrollListener(new MovieScrollListener());
@@ -173,25 +196,34 @@ public class MainActivity extends AppCompatActivity implements
                     savedInstanceState.getInt(getString(R.string.bsik_mode),
                             MainActivity.DEFAULT_MODE);
         }
+        else {
+            mPopularMovies = new MovieManagedData(getString(R.string.bv_request_type_popular));
+            mTopRatedMovies = new MovieManagedData(getString(R.string.bv_request_type_top_rated));
+        }
 
         // Set the current active movie data.
         setCurrentMovieData();
 
-        // Manage the view if the instance state exists.
-        if (this.mActiveData.getMovies().size() > 0) {
-            this.mMovieAdapter.setMovieData(this.mActiveData);
-            gridLayoutManager.scrollToPosition(this.mActiveData.getFirstVisible());
-        }
-        else {
-            // Attempt to fetch data.
-            this.fetchData();
-        }
+        // Set the view with the correct movie data.
+        setView();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
+
+        MainActivity.mMenu = menu;
+
+        // Need to set the correct UI mode for the filter.
+        if (MainActivity.mMode == MainActivity.TOP_RATED_MODE) {
+            MenuItem item = null;
+            item = menu.findItem(R.id.menu_item_sort_popular);
+            item.setChecked(false);
+            item = menu.findItem(R.id.menu_item_sort_top_rated);
+            item.setChecked(true);
+        }
+
         return true;
     }
 
@@ -203,9 +235,27 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.mi_refresh:
                 this.fetchData();
                 break;
-            case R.id.mi_sort:
+            case R.id.menu_item_sort_popular:
+                if (!item.isChecked()) {
+                    item.setChecked(true);
+                    MenuItem menuItem = MainActivity.mMenu.findItem(R.id.menu_item_sort_top_rated);
+                    menuItem.setChecked(false);
+                    MainActivity.mMode = MainActivity.POPULAR_MODE;
+                    this.setCurrentMovieData();
+                    this.setView();
+                    this.setTitle(getString(R.string.popular_title));
+                }
                 break;
-            case R.id.mi_settings:
+            case R.id.menu_item_sort_top_rated:
+                if (!item.isChecked()) {
+                    item.setChecked(true);
+                    MenuItem menuItem = MainActivity.mMenu.findItem(R.id.menu_item_sort_popular);
+                    menuItem.setChecked(false);
+                    MainActivity.mMode = MainActivity.TOP_RATED_MODE;
+                    this.setCurrentMovieData();
+                    this.setView();
+                    this.setTitle(getString(R.string.top_rated_title));
+                }
                 break;
             default:
                 break;
@@ -216,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void OnClick(int position) {
-        Log.d("MainActivity onClick", Integer.toString(position));
         Intent intent = new Intent(this, MovieDetailActivity.class);
         intent.putExtra(getString(R.string.ik_movie_poster), this.mActiveData.getMovies().get(position).getPosterPath());
         intent.putExtra(getString(R.string.ik_movie_title), this.mActiveData.getMovies().get(position).getTitle());
@@ -241,22 +290,6 @@ public class MainActivity extends AppCompatActivity implements
         outState.putInt(getString(R.string.bsik_mode), mMode);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
     //**********************************************************************************************
     // END ANDROID LIFE-CYCLE METHODS
     //**********************************************************************************************
@@ -271,13 +304,10 @@ public class MainActivity extends AppCompatActivity implements
     @NonNull
     @Override
     public Loader<String> onCreateLoader(int id, final @Nullable Bundle args) {
-        Log.d("onCreateLoader", "In on CreateLoader");
         switch(id) {
             case MainActivity.FETCH_DATA_ID:
                 return new MovieAsyncTaskLoader(this, args);
             default:
-                Log.d("onCreateLoader Error", "Illegal ID of " + id);
-
                 throw new java.lang.IllegalArgumentException("Unsupported ID value.");
         }
     }
