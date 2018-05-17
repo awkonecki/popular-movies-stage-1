@@ -2,29 +2,19 @@ package com.example.nebo.popular_movies;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.Toast;
 
 import com.example.nebo.popular_movies.async.MovieAsyncTaskLoader;
 import com.example.nebo.popular_movies.async.MovieManagedData;
@@ -32,8 +22,7 @@ import com.example.nebo.popular_movies.util.JsonUtils;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<String>,
-        MovieAdapter.MovieAdatperOnClickListener,
-        android.widget.AdapterView.OnItemSelectedListener {
+        MovieAdapter.MovieAdatperOnClickListener {
 
     private static boolean mLoading = false;
     private static final int FETCH_DATA_ID = 14;
@@ -150,6 +139,12 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * @brief Sets the data for the recyclerviewer adapter instance and attempts to set the correct
+     * visible element.
+     * @TODO the visible piece is going back to the initial upon selection changes.  Is this due to
+     * the mAdapter when it populates the views setting it back to zero???
+     */
     public void setView() {
         GridLayoutManager gridLayoutManager = (GridLayoutManager) this.mRecyclerView.getLayoutManager();
 
@@ -157,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements
         if (this.mActiveData.getMovies().size() > 0) {
             this.mMovieAdapter.setMovieData(this.mActiveData);
             gridLayoutManager.scrollToPosition(this.mActiveData.getFirstVisible());
-            Log.d("Setting View", this.mActiveData.getType() + " " + this.mActiveData.getFirstVisible());
         }
         else {
             // Attempt to fetch data.
@@ -168,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("onCreate", "onCreate");
         setContentView(R.layout.activity_main);
 
         // Save the instance of the progress bar.
@@ -182,7 +175,8 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_recycler_view);
 
         // 3. Make a new LayoutManager of the `GridLayout` type.
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,
+                2, GridLayoutManager.VERTICAL, false);
 
         // 4. Set the properties that the recycleviewer wil use.
         mRecyclerView.addOnScrollListener(new MovieScrollListener());
@@ -213,13 +207,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d("Menu", "menu");
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
 
         MainActivity.mMenu = menu;
 
-        // Need to set the correct mode.
+        // Need to set the correct UI mode for the filter.
         if (MainActivity.mMode == MainActivity.TOP_RATED_MODE) {
             MenuItem item = null;
             item = menu.findItem(R.id.menu_item_sort_popular);
@@ -229,16 +222,6 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         return true;
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
     }
 
     @Override
@@ -280,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void OnClick(int position) {
-        Log.d("MainActivity onClick", Integer.toString(position));
         Intent intent = new Intent(this, MovieDetailActivity.class);
         intent.putExtra(getString(R.string.ik_movie_poster), this.mActiveData.getMovies().get(position).getPosterPath());
         intent.putExtra(getString(R.string.ik_movie_title), this.mActiveData.getMovies().get(position).getTitle());
@@ -305,22 +287,6 @@ public class MainActivity extends AppCompatActivity implements
         outState.putInt(getString(R.string.bsik_mode), mMode);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
     //**********************************************************************************************
     // END ANDROID LIFE-CYCLE METHODS
     //**********************************************************************************************
@@ -335,13 +301,10 @@ public class MainActivity extends AppCompatActivity implements
     @NonNull
     @Override
     public Loader<String> onCreateLoader(int id, final @Nullable Bundle args) {
-        Log.d("onCreateLoader", "In on CreateLoader");
         switch(id) {
             case MainActivity.FETCH_DATA_ID:
                 return new MovieAsyncTaskLoader(this, args);
             default:
-                Log.d("onCreateLoader Error", "Illegal ID of " + id);
-
                 throw new java.lang.IllegalArgumentException("Unsupported ID value.");
         }
     }
