@@ -9,18 +9,21 @@
         android:contentDescription="@string/mi_refresh_content_description"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/mi_sort"
-        android:title="@string/mi_sort_title"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:contentDescription="@string/mi_sort_content_description"
-        app:showAsAction="ifRoom" />
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/mi_group_sorting_order"
+        app:showAsAction="ifRoom">
+        <item
+            android:title="@string/mi_sort_popular"
+            android:id="@+id/menu_item_sort_popular"
+            android:checkable="true"
+            android:checked="true"/>
+        <item
+            android:title="@string/mi_sort_top_rated"
+            android:id="@+id/menu_item_sort_top_rated"
+            android:checkable="true"
+            android:checked="false"/>
+    </group>
 
-    <item
-        android:id="@+id/mi_settings"
-        android:title="@string/mi_settings_title"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:contentDescription="@string/mi_settings_content_description"
-        app:showAsAction="ifRoom"/>
 
 </menu>

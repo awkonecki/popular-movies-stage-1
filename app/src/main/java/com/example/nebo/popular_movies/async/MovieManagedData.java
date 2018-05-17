@@ -13,8 +13,10 @@ public class MovieManagedData implements Parcelable{
     private List<Movie> mMovies = new ArrayList<Movie>();
     private int mPage = MovieURLUtils.DEFAULT_PAGE_NUM;
     private int mFirstVisible = 0;
+    private String mType = null;
 
-    public MovieManagedData() {
+    public MovieManagedData(String type) {
+        this.mType = type;
     }
 
     private MovieManagedData(Parcel in) {
@@ -22,7 +24,12 @@ public class MovieManagedData implements Parcelable{
             in.readTypedList(this.mMovies, Movie.CREATOR);
             this.mPage = in.readInt();
             this.mFirstVisible = in.readInt();
+            this.mType = in.readString();
         }
+    }
+
+    public String getType() {
+        return this.mType;
     }
 
     public void setFirstVisible(int position) {
@@ -74,6 +81,7 @@ public class MovieManagedData implements Parcelable{
         dest.writeTypedList(this.mMovies);
         dest.writeInt(this.mPage);
         dest.writeInt(this.mFirstVisible);
+        dest.writeString(this.mType);
     }
 
     public static Creator<MovieManagedData> CREATOR = new Parcelable.Creator<MovieManagedData>() {

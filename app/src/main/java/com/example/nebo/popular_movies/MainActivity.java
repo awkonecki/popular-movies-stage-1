@@ -2,10 +2,12 @@ package com.example.nebo.popular_movies;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,7 +17,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.Toast;
 
 import com.example.nebo.popular_movies.async.MovieAsyncTaskLoader;
 import com.example.nebo.popular_movies.async.MovieManagedData;
@@ -23,7 +32,8 @@ import com.example.nebo.popular_movies.util.JsonUtils;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<String>,
-        MovieAdapter.MovieAdatperOnClickListener {
+        MovieAdapter.MovieAdatperOnClickListener,
+        android.widget.AdapterView.OnItemSelectedListener {
 
     private static boolean mLoading = false;
     private static final int FETCH_DATA_ID = 14;
@@ -36,9 +46,10 @@ public class MainActivity extends AppCompatActivity implements
     private MovieAdapter mMovieAdapter = null;
     private RecyclerView mRecyclerView = null;
     private ProgressBar mProgressBar = null;
+    private static Menu mMenu = null;
 
-    private static MovieManagedData mPopularMovies = new MovieManagedData();
-    private static MovieManagedData mTopRatedMovies = new MovieManagedData();
+    private static MovieManagedData mPopularMovies = null;
+    private static MovieManagedData mTopRatedMovies = null;
     private static int mMode = MainActivity.DEFAULT_MODE;
 
     private MovieManagedData mActiveData = null;
@@ -103,8 +114,7 @@ public class MainActivity extends AppCompatActivity implements
         if (!MainActivity.mLoading) {
             args = new Bundle();
             args.putInt(getString(R.string.bk_page_number), this.mActiveData.getPage());
-            args.putString(getString(R.string.bk_request_type),
-                    getString(R.string.bv_request_type_popular));
+            args.putString(getString(R.string.bk_request_type), this.mActiveData.getType());
 
             MainActivity.mLoading = true;
             // Loader Manager for async tasks
@@ -140,9 +150,25 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    public void setView() {
+        GridLayoutManager gridLayoutManager = (GridLayoutManager) this.mRecyclerView.getLayoutManager();
+
+        // Manage the view if the instance state exists.
+        if (this.mActiveData.getMovies().size() > 0) {
+            this.mMovieAdapter.setMovieData(this.mActiveData);
+            gridLayoutManager.scrollToPosition(this.mActiveData.getFirstVisible());
+            Log.d("Setting View", this.mActiveData.getType() + " " + this.mActiveData.getFirstVisible());
+        }
+        else {
+            // Attempt to fetch data.
+            this.fetchData();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("onCreate", "onCreate");
         setContentView(R.layout.activity_main);
 
         // Save the instance of the progress bar.
@@ -173,26 +199,46 @@ public class MainActivity extends AppCompatActivity implements
                     savedInstanceState.getInt(getString(R.string.bsik_mode),
                             MainActivity.DEFAULT_MODE);
         }
+        else {
+            mPopularMovies = new MovieManagedData(getString(R.string.bv_request_type_popular));
+            mTopRatedMovies = new MovieManagedData(getString(R.string.bv_request_type_top_rated));
+        }
 
         // Set the current active movie data.
         setCurrentMovieData();
 
-        // Manage the view if the instance state exists.
-        if (this.mActiveData.getMovies().size() > 0) {
-            this.mMovieAdapter.setMovieData(this.mActiveData);
-            gridLayoutManager.scrollToPosition(this.mActiveData.getFirstVisible());
-        }
-        else {
-            // Attempt to fetch data.
-            this.fetchData();
-        }
+        // Set the view with the correct movie data.
+        setView();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d("Menu", "menu");
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
+
+        MainActivity.mMenu = menu;
+
+        // Need to set the correct mode.
+        if (MainActivity.mMode == MainActivity.TOP_RATED_MODE) {
+            MenuItem item = null;
+            item = menu.findItem(R.id.menu_item_sort_popular);
+            item.setChecked(false);
+            item = menu.findItem(R.id.menu_item_sort_top_rated);
+            item.setChecked(true);
+        }
+
         return true;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     @Override
@@ -203,9 +249,27 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.mi_refresh:
                 this.fetchData();
                 break;
-            case R.id.mi_sort:
+            case R.id.menu_item_sort_popular:
+                if (!item.isChecked()) {
+                    item.setChecked(true);
+                    MenuItem menuItem = MainActivity.mMenu.findItem(R.id.menu_item_sort_top_rated);
+                    menuItem.setChecked(false);
+                    MainActivity.mMode = MainActivity.POPULAR_MODE;
+                    this.setCurrentMovieData();
+                    this.setView();
+                    this.setTitle(getString(R.string.popular_title));
+                }
                 break;
-            case R.id.mi_settings:
+            case R.id.menu_item_sort_top_rated:
+                if (!item.isChecked()) {
+                    item.setChecked(true);
+                    MenuItem menuItem = MainActivity.mMenu.findItem(R.id.menu_item_sort_popular);
+                    menuItem.setChecked(false);
+                    MainActivity.mMode = MainActivity.TOP_RATED_MODE;
+                    this.setCurrentMovieData();
+                    this.setView();
+                    this.setTitle(getString(R.string.top_rated_title));
+                }
                 break;
             default:
                 break;

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">popular-movies</string>
+    <string name="popular_title" translatable="true">Popular Movies</string>
+    <string name="top_rated_title" translatable="true">Top Rated Movies</string>
 
     <!-- Labels -->
     <string name="tv_label_title" translatable="true">Title</string>
@@ -38,6 +40,10 @@
     <string name="bv_request_type_popular" translatable="false">popular</string>
     <string name="bv_request_type_top_rated" translatable="false">top rated</string>
     <string name="bv_request_type_search" translatable="false">search</string>
+
+    <!-- Menu Item Values -->
+    <string name="mi_sort_popular" translatable="true">Popular</string>
+    <string name="mi_sort_top_rated" translatable="true">Top Rated</string>
 
     <!-- Sorting Values Array -->
     <string-array name="sav_sorting">
