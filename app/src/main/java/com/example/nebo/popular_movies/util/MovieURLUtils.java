@@ -33,6 +33,7 @@ public class MovieURLUtils {
             // !!! Place key below.
             "XXX";
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     /**
      * @brief Construct a valid URL with the popular movie endpoint.
@@ -41,6 +42,8 @@ public class MovieURLUtils {
     public static URL buildPopularURL() {
         return MovieURLUtils.buildUrl(MovieURLUtils.POPULAR_MOVIE_ENDPOINT, 1);
     }
+=======
+>>>>>>> d7cb17b... Lint Clean-up
 =======
 >>>>>>> d7cb17b... Lint Clean-up
 
